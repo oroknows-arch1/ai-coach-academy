@@ -15,8 +15,6 @@ Included in the foundation:
 - lesson response + understanding-check flow
 - reusable toolkit saving
 - hidden QA console opened by tapping the Academy brand 7 times
-- prepared desktop and mobile workplace-image slots aligned to the supplied visual references
-
-The workplace-image files on this foundation branch are neutral slot assets only. The final standalone approved workplace artwork can replace them without changing the lesson architecture.
+- desktop and mobile workplace-image assets taken from the supplied approved visual references
 
 No backend, database or authentication services are introduced.
