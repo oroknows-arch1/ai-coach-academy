@@ -1,20 +1,22 @@
 # AI Coach Academy
 
-Static GitHub Pages frontend for **OROK Studios — AI Coach Academy**.
+AI Coach Academy is an OROK Studios workplace-learning application for practical, responsible AI use in professional lending environments.
 
-## Frontend foundation branch
+## Current build
 
-This foundation is intentionally frontend-only and uses plain HTML, CSS and JavaScript so it remains compatible with GitHub Pages without a build step.
+- Mobile-first responsive application shell
+- Six focused learning modules
+- Lesson progress stored locally in the learner's browser
+- Reusable Toolkit outputs
+- Module and Academy completion records
+- Hidden seven-tap Developer Console for QA
+- Approved workplace imagery for desktop and mobile lesson contexts
+- OROK Studios master-brand hierarchy with task-first working screens
 
-Included in the foundation:
+## OROK build rules
 
-- responsive OROK Studios / AI Coach Academy app shell
-- module dashboard and focused lesson workspace
-- separate Toolkit and Certificates views
-- local browser progress state
-- lesson response + understanding-check flow
-- reusable toolkit saving
-- hidden QA console opened by tapping the Academy brand 7 times
-- desktop and mobile workplace-image assets taken from the supplied approved visual references
+Project-level OROK application rules are recorded in `.orok/BUILD_LAWS.md` and should be treated as binding unless explicitly changed by the product owner.
 
-No backend, database or authentication services are introduced.
+## Hosting
+
+This repository is designed for static GitHub Pages hosting from the `main` branch.
