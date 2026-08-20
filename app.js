@@ -113,7 +113,7 @@
       else document.getElementById('understandingFeedback').innerHTML='<div class="feedback bad">Not quite. Choose the answer that keeps evidence, boundaries and human accountability visible.</div>';
     });
     document.getElementById('saveToolkit').addEventListener('click',()=>saveToolkit(l,box.value.trim()));
-    document.getElementById('continueLesson').addEventListener('click',()=>{ if(!complete(id)) return; const next=nextLesson(l); next?openLesson(idOf(next)):openModule(l.module); });
+    document.getElementById('continueLesson').addEventListener('click',()=>{ if(!complete(id)) return; const next=nextLesson(l); if(next) openLesson(idOf(next)); else setView('certificates'); });
     document.querySelector('[data-back-module]').addEventListener('click',()=>openModule(l.module));
   }
   function completeLesson(l){ const id=idOf(l); if(!state.completedLessons.includes(id)) state.completedLessons.push(id); ensureCertificates(l.module); save(); }
