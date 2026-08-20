@@ -17,15 +17,32 @@ jobs:
         with:
           ref: deploy-approved-academy
           fetch-depth: 0
-      - name: Reconstruct exact approved PNGs
+      - name: Reconstruct and verify approved workplace images
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p assets
-          cat .asset-staging/exact-desktop/*.b64 | base64 --decode > assets/workplace-desktop.png
-          cat .asset-staging/exact-mobile/*.b64 | base64 --decode > assets/workplace-mobile.png
-          echo "452cfcbf9c306eb4221b08fd3f797c13e118abb6dc52978a6d9e22b86e65e4fb  assets/workplace-desktop.png" | sha256sum -c -
-          echo "d178619a785c1edefaa649f5fd0f68713ab594beb37605dfcf4d20308dd608f5  assets/workplace-mobile.png" | sha256sum -c -
+          mkdir -p assets /tmp/academy-assets
+          cat .asset-staging/jxl-desktop/*.b64 | base64 --decode > /tmp/academy-assets/desktop.jxl
+          cat .asset-staging/jxl-mobile/*.b64 | base64 --decode > /tmp/academy-assets/mobile.jxl
+          echo "23689a2f24e0c240d62a6ae21558d178ff67bb94b62cfabc4731e974bc500bc5  /tmp/academy-assets/desktop.jxl" | sha256sum -c -
+          echo "6daee8c03c786df7fed576079202f459d5c19e103db9a7ae40d85da2bf76bb1a  /tmp/academy-assets/mobile.jxl" | sha256sum -c -
+          ffmpeg -hide_banner -loglevel error -y -i /tmp/academy-assets/desktop.jxl assets/workplace-desktop.png
+          ffmpeg -hide_banner -loglevel error -y -i /tmp/academy-assets/mobile.jxl assets/workplace-mobile.png
+          python3 -m pip install --quiet pillow
+          python3 - <<'PY'
+          from PIL import Image
+          import hashlib
+          checks = [
+              ('assets/workplace-desktop.png', (706, 835), '665620172e217eba324e5251f109d7fe71c9f4797b00b92d82db7c056134fbba'),
+              ('assets/workplace-mobile.png', (637, 376), '8d82eb67e6c6ae92d7eb01e9979e983949c3ffe6af76b818068c211f3efc864e'),
+          ]
+          for path, size, expected in checks:
+              image = Image.open(path).convert('RGB')
+              assert image.size == size, (path, image.size, size)
+              digest = hashlib.sha256(image.tobytes()).hexdigest()
+              assert digest == expected, (path, digest, expected)
+              print(f'{path}: pixel-identical approved artwork verified')
+          PY
           rm -f assets/workplace-desktop.jpg assets/workplace-mobile.jpg
           rm -rf .asset-staging
           rm -f .github/workflows/reconstruct-approved-assets.yml
@@ -36,5 +53,5 @@ jobs:
           git config user.name "oroknows-arch1"
           git config user.email "oroknows@gmail.com"
           git add -A
-          git commit -m "Install exact approved Academy workplace PNGs [skip ci]"
+          git commit -m "Install verified approved Academy workplace images [skip ci]"
           git push origin HEAD:deploy-approved-academy
