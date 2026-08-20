@@ -1,0 +1,59 @@
+name: Apply formative scoring hotfix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-formative-scoring-hotfix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Replace narrow keyword gate with weighted scorer
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('app.js')
+          text = path.read_text()
+          old = """    document.getElementById('checkResponse').addEventListener('click',()=>{\n      const text=box.value.trim(), enough=text.length>=45, review=/verify|check|source|approved|evidence|human|policy|review|confirm|boundary|trusted/i.test(text);\n      setWork(id,{response:text,formativePassed:enough&&review,selectedAnswer:enough&&review?w.selectedAnswer:null,understandingPassed:enough&&review?w.understandingPassed:false});\n      if(enough&&review) renderLesson(); else document.getElementById('formativeFeedback').innerHTML='<div class=\"feedback bad\">Strengthen the response. Make the task clear and include how evidence, boundaries or human review will be checked.</div>';\n    });"""
+          new = """    document.getElementById('checkResponse').addEventListener('click',()=>{\n      const text=box.value.trim();\n      const assessment=window.ACADEMY_SCORE_RESPONSE\n        ? window.ACADEMY_SCORE_RESPONSE(text)\n        : {pass:text.length>=80};\n      const passed=assessment.pass;\n      setWork(id,{response:text,formativePassed:passed,selectedAnswer:passed?w.selectedAnswer:null,understandingPassed:passed?w.understandingPassed:false});\n      if(passed) renderLesson(); else document.getElementById('formativeFeedback').innerHTML='<div class=\"feedback bad\">Add a little more about the task, the workplace context and what a useful outcome should look like.</div>';\n    });"""
+          if old not in text:
+              raise SystemExit('Expected formative scoring block not found; no change made.')
+          path.write_text(text.replace(old, new, 1))
+
+      - name: Verify scorer against accepted and weak examples
+        shell: bash
+        run: |
+          node <<'JS'
+          global.window = {};
+          require('./response-scoring.js');
+          const accepted = `A follow up email to lender Mel. Taking notes from our past shadow sessions the email needs to clarify more education is needed on company policies required for customer service. We need to see more independent advice given without looking to coaches. We will see results from starting to closing of sessions without seeking coaches help. We will see how results will be depending on lending knowledge, understanding and communication to customer.`;
+          const weak = 'Write an email to Mel about lending.';
+          const good = window.ACADEMY_SCORE_RESPONSE(accepted);
+          const bad = window.ACADEMY_SCORE_RESPONSE(weak);
+          if (!good.pass) throw new Error(`Accepted workplace response failed: ${JSON.stringify(good)}`);
+          if (bad.pass) throw new Error(`Weak response passed unexpectedly: ${JSON.stringify(bad)}`);
+          console.log('Accepted sample:', good);
+          console.log('Weak sample:', bad);
+          JS
+
+      - name: Commit scoring change and remove one-time workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/apply-formative-scoring-hotfix.yml
+          git config user.name "oroknows-arch1"
+          git config user.email "oroknows@gmail.com"
+          git add app.js .github/workflows/apply-formative-scoring-hotfix.yml
+          git commit -m "Tune formative response weighting for realistic workplace answers"
+          git push origin HEAD:main
