@@ -103,9 +103,13 @@
     toggle.addEventListener('click',()=>{ const open=toggle.getAttribute('aria-expanded')==='true'; toggle.setAttribute('aria-expanded',String(!open)); body.classList.toggle('hidden',open); });
     box.addEventListener('input',()=>{ setWork(id,{response:box.value}); document.getElementById('responseCount').textContent=`${box.value.trim().length} characters`; document.getElementById('saveToolkit').disabled=box.value.trim().length<20; });
     document.getElementById('checkResponse').addEventListener('click',()=>{
-      const text=box.value.trim(), enough=text.length>=45, review=/verify|check|source|approved|evidence|human|policy|review|confirm|boundary|trusted/i.test(text);
-      setWork(id,{response:text,formativePassed:enough&&review,selectedAnswer:enough&&review?w.selectedAnswer:null,understandingPassed:enough&&review?w.understandingPassed:false});
-      if(enough&&review) renderLesson(); else document.getElementById('formativeFeedback').innerHTML='<div class="feedback bad">Strengthen the response. Make the task clear and include how evidence, boundaries or human review will be checked.</div>';
+      const text=box.value.trim();
+      const assessment=window.ACADEMY_SCORE_RESPONSE
+        ? window.ACADEMY_SCORE_RESPONSE(text)
+        : {pass:text.length>=80};
+      const passed=assessment.pass;
+      setWork(id,{response:text,formativePassed:passed,selectedAnswer:passed?w.selectedAnswer:null,understandingPassed:passed?w.understandingPassed:false});
+      if(passed) renderLesson(); else document.getElementById('formativeFeedback').innerHTML='<div class="feedback bad">Add a little more about the task, the workplace context and what a useful outcome should look like.</div>';
     });
     main.querySelectorAll('[data-answer]').forEach(b=>b.addEventListener('click',()=>{ setWork(id,{selectedAnswer:Number(b.dataset.answer),understandingPassed:false}); renderLesson(); }));
     const submit=document.getElementById('submitUnderstanding'); if(submit) submit.addEventListener('click',()=>{
