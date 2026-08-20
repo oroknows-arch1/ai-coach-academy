@@ -22,8 +22,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p assets
-          cat .asset-staging/desktop/*.b64 | base64 --decode > assets/workplace-desktop.png
-          cat .asset-staging/mobile/*.b64 | base64 --decode > assets/workplace-mobile.png
+          cat .asset-staging/desktop2/*.b64 | base64 --decode > assets/workplace-desktop.png
+          cat .asset-staging/mobile2/*.b64 | base64 --decode > assets/workplace-mobile.png
           echo "452cfcbf9c306eb4221b08fd3f797c13e118abb6dc52978a6d9e22b86e65e4fb  assets/workplace-desktop.png" | sha256sum -c -
           echo "d178619a785c1edefaa649f5fd0f68713ab594beb37605dfcf4d20308dd608f5  assets/workplace-mobile.png" | sha256sum -c -
           rm -f assets/workplace-desktop.jpg assets/workplace-mobile.jpg
