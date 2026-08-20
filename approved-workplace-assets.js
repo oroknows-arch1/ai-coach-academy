@@ -1,13 +1,12 @@
 (() => {
   'use strict';
 
-  // The Academy repository carries approved workplace artwork as JPEG assets.
-  // The application shell was built against PNG filenames during review, so
-  // this small adapter keeps the approved desktop/mobile artwork wired to the
-  // correct responsive slots without changing the lesson rendering logic.
+  // Keep the reviewed workplace artwork wired to the correct responsive slots.
+  // Mobile now uses the verified clean WebP asset so the previously corrupted
+  // JPEG can never be selected by the lesson renderer.
   const approvedSources = {
     'assets/workplace-desktop.png': 'assets/workplace-desktop.jpg',
-    'assets/workplace-mobile.png': 'assets/workplace-mobile.jpg'
+    'assets/workplace-mobile.png': 'assets/workplace-mobile.webp'
   };
 
   function applyApprovedWorkplaceAssets(root = document) {
