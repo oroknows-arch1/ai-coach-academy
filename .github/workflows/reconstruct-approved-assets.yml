@@ -17,24 +17,46 @@ jobs:
         with:
           ref: deploy-approved-academy
           fetch-depth: 0
-      - name: Reconstruct exact approved PNGs
+      - name: Install lossless decoder
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p assets
-          cat .asset-staging/desktop2/*.b64 | base64 --decode > assets/workplace-desktop.png
-          cat .asset-staging/mobile2/*.b64 | base64 --decode > assets/workplace-mobile.png
-          echo "452cfcbf9c306eb4221b08fd3f797c13e118abb6dc52978a6d9e22b86e65e4fb  assets/workplace-desktop.png" | sha256sum -c -
-          echo "d178619a785c1edefaa649f5fd0f68713ab594beb37605dfcf4d20308dd608f5  assets/workplace-mobile.png" | sha256sum -c -
+          sudo apt-get update
+          sudo apt-get install -y libjxl-tools
+      - name: Reconstruct approved workplace images
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .asset-staging/rebuilt assets
+          cat .asset-staging/jxl-desktop/*.b64 | base64 --decode > .asset-staging/rebuilt/workplace-desktop.jxl
+          cat .asset-staging/jxl-mobile/*.b64 | base64 --decode > .asset-staging/rebuilt/workplace-mobile.jxl
+          echo "23689a2f24e0c240d62a6ae21558d178ff67bb94b62cfabc4731e974bc500bc5  .asset-staging/rebuilt/workplace-desktop.jxl" | sha256sum -c -
+          echo "6daee8c03c786df7fed576079202f459d5c19e103db9a7ae40d85da2bf76bb1a  .asset-staging/rebuilt/workplace-mobile.jxl" | sha256sum -c -
+          djxl .asset-staging/rebuilt/workplace-desktop.jxl assets/workplace-desktop.png
+          djxl .asset-staging/rebuilt/workplace-mobile.jxl assets/workplace-mobile.png
+          python3 - <<'PY'
+          import struct
+          from pathlib import Path
+          expected = {
+              'assets/workplace-desktop.png': (706, 835),
+              'assets/workplace-mobile.png': (637, 376),
+          }
+          for path, dims in expected.items():
+              data = Path(path).read_bytes()
+              assert data[:8] == b'\x89PNG\r\n\x1a\n', path
+              width, height = struct.unpack('>II', data[16:24])
+              assert (width, height) == dims, (path, width, height)
+              print(f'{path}: {width}x{height} OK')
+          PY
           rm -f assets/workplace-desktop.jpg assets/workplace-mobile.jpg
           rm -rf .asset-staging
           rm -f .github/workflows/reconstruct-approved-assets.yml
-      - name: Commit verified assets
+      - name: Commit verified approved assets
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "oroknows-arch1"
           git config user.email "oroknows@gmail.com"
           git add -A
-          git commit -m "Install exact approved Academy workplace PNGs [skip ci]"
+          git commit -m "Install approved Academy workplace images [skip ci]"
           git push origin HEAD:deploy-approved-academy
