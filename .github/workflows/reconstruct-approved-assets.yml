@@ -1,0 +1,40 @@
+name: Reconstruct approved Academy assets
+
+on:
+  push:
+    branches: [deploy-approved-academy]
+    paths:
+      - '.asset-staging/READY'
+
+permissions:
+  contents: write
+
+jobs:
+  reconstruct:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: deploy-approved-academy
+          fetch-depth: 0
+      - name: Reconstruct exact approved PNGs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets
+          cat .asset-staging/desktop/*.b64 | base64 --decode > assets/workplace-desktop.png
+          cat .asset-staging/mobile/*.b64 | base64 --decode > assets/workplace-mobile.png
+          echo "452cfcbf9c306eb4221b08fd3f797c13e118abb6dc52978a6d9e22b86e65e4fb  assets/workplace-desktop.png" | sha256sum -c -
+          echo "d178619a785c1edefaa649f5fd0f68713ab594beb37605dfcf4d20308dd608f5  assets/workplace-mobile.png" | sha256sum -c -
+          rm -f assets/workplace-desktop.jpg assets/workplace-mobile.jpg
+          rm -rf .asset-staging
+          rm -f .github/workflows/reconstruct-approved-assets.yml
+      - name: Commit verified assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "oroknows-arch1"
+          git config user.email "oroknows@gmail.com"
+          git add -A
+          git commit -m "Install exact approved Academy workplace PNGs [skip ci]"
+          git push origin HEAD:deploy-approved-academy
