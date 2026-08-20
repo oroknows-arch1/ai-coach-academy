@@ -2,11 +2,10 @@
   'use strict';
 
   // Keep the reviewed workplace artwork wired to the correct responsive slots.
-  // Mobile now uses the verified clean WebP asset so the previously corrupted
-  // JPEG can never be selected by the lesson renderer.
+  // The versioned mobile URL prevents stale/corrupted browser cache reuse.
   const approvedSources = {
     'assets/workplace-desktop.png': 'assets/workplace-desktop.jpg',
-    'assets/workplace-mobile.png': 'assets/workplace-mobile.webp'
+    'assets/workplace-mobile.png': 'assets/workplace-mobile.webp?v=20260821-0606'
   };
 
   function applyApprovedWorkplaceAssets(root = document) {
