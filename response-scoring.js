@@ -5,7 +5,7 @@
   // specific Academy vocabulary. This lightweight scorer rewards substance
   // across four dimensions while keeping the final understanding check as the
   // explicit knowledge confirmation.
-  window.ACADEMY_SCORE_RESPONSE = function scoreAcademyResponse(value) {
+  function scoreAcademyResponse(value) {
     const text = String(value || '').trim();
     const words = text.match(/[A-Za-z0-9'-]+/g) || [];
 
@@ -28,4 +28,6 @@
       dimensions
     };
   };
+  if (typeof window !== 'undefined') window.ACADEMY_SCORE_RESPONSE = scoreAcademyResponse;
+  if (typeof module !== 'undefined') module.exports = scoreAcademyResponse;
 })();
