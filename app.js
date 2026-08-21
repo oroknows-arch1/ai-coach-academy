@@ -122,7 +122,8 @@
       const passed=assessment.pass;
       setWork(id,{response:text,formativePassed:passed,assessment:rubric?assessment:null,selectedAnswer:passed?w.selectedAnswer:null,understandingPassed:passed?w.understandingPassed:false});
       if(rubric) updateDeveloperAssessment(assessment);
-      if(passed) renderLesson(); else {button.disabled=false;button.textContent='CHECK MY ANSWER';document.getElementById('formativeFeedback').innerHTML=assessmentFeedback(assessment);}
+      if(rubric || passed) renderLesson();
+      else {button.disabled=false;button.textContent='CHECK MY ANSWER';document.getElementById('formativeFeedback').innerHTML=assessmentFeedback(assessment);}
     });
     main.querySelectorAll('[data-answer]').forEach(b=>b.addEventListener('click',()=>{ setWork(id,{selectedAnswer:Number(b.dataset.answer),understandingPassed:false}); renderLesson(); }));
     const submit=document.getElementById('submitUnderstanding'); if(submit) submit.addEventListener('click',()=>{

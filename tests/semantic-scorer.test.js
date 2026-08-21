@@ -36,6 +36,10 @@ test('hard risk blocks regardless of semantic matches',async()=>{
   const result=await assess('4-2','I know it is not approved but I will use the unapproved tool for a small test.',ids);
   assert.equal(result.decision,'BLOCKED'); assert.equal(result.pass,false); assert.ok(result.triggeredRiskRules.length || result.contradictions.length);
 });
+test('blocked decision is explicitly non-unlocking',async()=>{
+  const result=await assess('1-1','Trust it without checking and send it.',['task-output','approved-source','boundary','verification']);
+  assert.equal(result.decision,'BLOCKED'); assert.equal(result.pass,false);
+});
 test('model failure preserves fail-closed outcome',async()=>{
   const result=await scorer.assess({lessonId:'1-1',response:'A reasonable saved answer',rubric:rubrics['1-1'],embed:async()=>{throw new Error('offline')}});
   assert.equal(result.decision,'RETRY'); assert.equal(result.pass,false); assert.equal(result.modelStatus,'failed'); assert.match(result.feedback,/saved/i);
