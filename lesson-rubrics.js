@@ -42,7 +42,8 @@
       contradictions: [{ id: 'trust-without-checking', patterns: ['trust it without checking', 'no need to verify', 'do not need to check', 'assume it is correct'] }],
       blockConditions: [],
       passConditions: { requiredMeaningRatio: 1, minimumRequiredMeanings: 2, mandatoryMeaningIds: ['task-output'], supportingMeaningCount: 0, minimumConfidence: 0.42 },
-      sufficientFeedback: 'Your response demonstrates a clear workplace task and relevant context. To strengthen the prompt, consider identifying whether the source is approved, what AI should avoid assuming, and how you will check the draft before using it.'
+      clarificationFeedback: 'Your request is on the right track. Add what information Copilot should use and what you will check before using the result.',
+      sufficientFeedback: 'Good. Your request is clear. You could make it stronger by saying what information Copilot should use and what you will check before sending the email.'
     },
     '1-5': {
       ...common,

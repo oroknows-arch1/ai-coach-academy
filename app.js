@@ -102,7 +102,7 @@
   }
   function renderCheck(l,w){
     if(!w.formativePassed) return `<section class="check-card locked"><div class="check-header"><div class="check-badge">?</div><div><h2>Check your understanding</h2><p>Complete the formative response above to unlock the final understanding check.</p></div><span class="lock-icon">⌁</span></div></section>`;
-    return `<section class="check-card"><div class="check-header"><div class="check-badge">?</div><div><h2>Check your understanding</h2><p>${esc(l.checkQuestion)}</p></div><span class="lock-icon">✓</span></div><div class="check-options">${l.answers.map((a,i)=>`<button class="check-option ${w.selectedAnswer===i?'selected':''}" data-answer="${i}" type="button">${esc(a)}</button>`).join('')}</div>${w.selectedAnswer!==null?'<button id="submitUnderstanding" class="primary-action" type="button">CONFIRM ANSWER</button>':''}<div id="understandingFeedback" aria-live="polite">${w.understandingPassed?'<div class="feedback good">Correct. You have confirmed the core lesson principle.</div>':''}</div></section>`;
+    return `<section class="check-card"><div class="check-header"><div class="check-badge">?</div><div><h2>Check your understanding</h2><p>${esc(l.checkQuestion)}</p></div><span class="lock-icon">✓</span></div><div class="check-options">${l.answers.map((a,i)=>`<button class="check-option ${w.selectedAnswer===i?'selected':''}" data-answer="${i}" type="button">${esc(a)}</button>`).join('')}</div>${w.selectedAnswer!==null?'<button id="submitUnderstanding" class="primary-action" type="button">CONFIRM ANSWER</button>':''}<div id="understandingFeedback" aria-live="polite">${w.understandingPassed?`<div class="feedback good">${esc(l.correctFeedback || 'Correct. You have confirmed the core lesson principle.')}</div>`:''}</div></section>`;
   }
   function bindLesson(l,w){
     const id=idOf(l), toggle=document.getElementById('conceptToggle'), body=document.getElementById('conceptBody'), box=document.getElementById('responseBox');
@@ -128,7 +128,7 @@
     main.querySelectorAll('[data-answer]').forEach(b=>b.addEventListener('click',()=>{ setWork(id,{selectedAnswer:Number(b.dataset.answer),understandingPassed:false}); renderLesson(); }));
     const submit=document.getElementById('submitUnderstanding'); if(submit) submit.addEventListener('click',()=>{
       const now=work(id); if(now.selectedAnswer===l.correct){ setWork(id,{understandingPassed:true}); completeLesson(l); renderLesson(); }
-      else document.getElementById('understandingFeedback').innerHTML='<div class="feedback bad">Not quite. Choose the answer that keeps evidence, boundaries and human accountability visible.</div>';
+      else document.getElementById('understandingFeedback').innerHTML=`<div class="feedback bad">${esc(l.incorrectFeedback || 'Not quite. Choose the answer that keeps evidence, boundaries and human accountability visible.')}</div>`;
     });
     document.getElementById('saveToolkit').addEventListener('click',()=>saveToolkit(l,box.value.trim()));
     document.getElementById('continueLesson').addEventListener('click',()=>{ if(!complete(id)) return; const next=nextLesson(l); if(next) openLesson(idOf(next)); else setView('certificates'); });
