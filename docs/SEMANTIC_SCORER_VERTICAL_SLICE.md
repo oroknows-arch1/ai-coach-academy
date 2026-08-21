@@ -10,6 +10,8 @@ The browser lazily loads `Xenova/all-MiniLM-L6-v2` through pinned Transformers.j
 
 Semantic similarity may detect alternative expression, but it cannot override deterministic block conditions or contradictions. Trial lessons require every required meaning. Low-confidence, incomplete and technical-failure results do not unlock the understanding check. The response remains in local browser storage and the learner is not penalised.
 
+Thresholds are rubric data, not one universal number. Lesson 1.1 uses calibrated per-meaning thresholds because a multi-part prompt dilutes short-clause similarity; all required meanings must still be present and hard rules retain priority.
+
 ## Commercial capability reference
 
 Public assessment-product patterns informed the shape—explicit rubrics, valid/incomplete/incorrect examples, confidence, safeguards, actionable feedback and QA evidence. No commercial code, prompts or protected implementation was copied.

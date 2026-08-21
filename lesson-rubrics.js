@@ -15,7 +15,7 @@
     contradictions: [],
     riskRequirements: [],
     blockConditions: [],
-    passConditions: { requiredMeaningRatio: 1, supportingMeaningCount: 0, minimumConfidence: 0.52 },
+    passConditions: { requiredMeaningRatio: 1, supportingMeaningCount: 0, minimumConfidence: 0.42 },
     clarificationFeedback: feedback.lowConfidence,
     retryFeedback: feedback.retry,
     blockedFeedback: feedback.blocked,
@@ -27,10 +27,10 @@
       ...common,
       id: 'rubric-1-1-v1', lessonId: '1-1',
       requiredMeanings: [
-        { id: 'task-output', label: 'a clear task and required output', examples: ['Draft a concise coaching note for regional lending leaders.', 'Make a short briefing for the lending managers.'] },
-        { id: 'approved-source', label: 'the approved source is named', examples: ['Use only the approved quality report.', 'Base it on the authorised quality results provided.'] },
-        { id: 'boundary', label: 'a boundary limits invention or unsupported claims', examples: ['Do not invent causes and flag anything the report does not support.', 'Separate evidence from assumptions and leave unknowns marked.'] },
-        { id: 'verification', label: 'important output will be checked by a person', examples: ['List the claims I must verify before sharing.', 'I will compare key points with the source before sending it.'] }
+        { id: 'task-output', label: 'a clear task and required output', threshold: 0.52, examples: ['Draft a concise coaching note for regional lending leaders.', 'Make a short briefing for the lending managers.'] },
+        { id: 'approved-source', label: 'the approved source is named', threshold: 0.40, examples: ['Use only the approved quality report.', 'Base it on the authorised quality results provided.'] },
+        { id: 'boundary', label: 'a boundary limits invention or unsupported claims', threshold: 0.37, examples: ['Do not invent causes and flag anything the report does not support.', 'Separate evidence from assumptions and leave unknowns marked.'] },
+        { id: 'verification', label: 'important output will be checked by a person', threshold: 0.45, examples: ['List the claims I must verify before sharing.', 'I will compare key points with the source before sending it.'] }
       ],
       supportingMeanings: [{ id: 'audience-tone', label: 'audience or useful format', examples: ['Use a professional tone and headings for regional leaders.', 'Keep it brief and practical for the managers.'] }],
       validExpressionExamples: [

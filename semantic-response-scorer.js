@@ -51,9 +51,8 @@
     const answerVectors=vectors.slice(0,candidates.length), exampleVectors=vectors.slice(candidates.length);
     examples.forEach((item,index)=>answerVectors.forEach((answerVector,candidateIndex)=>{ const score=cosine(answerVector,exampleVectors[index]); if(score>scores.get(item.meaning.id).score)scores.set(item.meaning.id,{score,example:item.example,responseEvidence:candidates[candidateIndex]}); }));
     base.meaningScores=[...scores].map(([id,evidence])=>({id,...evidence}));
-    const threshold = rubric.passConditions.minimumConfidence;
     for (const meaning of meanings) {
-      const evidence=scores.get(meaning.id), detected=evidence.score>=threshold;
+      const evidence=scores.get(meaning.id), detected=evidence.score>=(meaning.threshold ?? rubric.passConditions.minimumConfidence);
       if(detected){base.detectedMeanings.push({id:meaning.id,label:meaning.label,confidence:evidence.score});base.evidenceSpans.push({meaningId:meaning.id,responseEvidence:evidence.responseEvidence,matchedExample:evidence.example,confidence:evidence.score});}
     }
     const requiredIds=new Set(rubric.requiredMeanings.map(x=>x.id));
