@@ -36,6 +36,10 @@ test('Lesson 1.1 still retries when no meaningful task is demonstrated',async()=
   const result=await assess('1-1','Maybe use AI for something helpful.',['approved-source']);
   assert.equal(result.decision,'RETRY'); assert.equal(result.pass,false);
 });
+test('Lesson 1.1 relevant but incomplete task asks for clarification',async()=>{
+  const result=await assess('1-1','Write a follow-up email to the lender about the coaching sessions.',['task-output']);
+  assert.equal(result.decision,'CLARIFY'); assert.equal(result.pass,false);
+});
 test('partial meaning asks for clarification and does not unlock',async()=>{
   const result=await assess('1-5','I will use the approved workplace system and remove identifiers before asking for a summary.',['approved-system','data-minimisation']);
   assert.equal(result.decision,'CLARIFY'); assert.equal(result.pass,false); assert.equal(result.missingConcepts[0].id,'handling-rules');

@@ -68,6 +68,7 @@
       return {...base,decision,pass:true,feedback:decision===DECISIONS.PASS?'Your response shows the required meaning and keeps the key safeguards visible.':'Your response meets the core requirement. Consider adding the audience, format or human review detail to make it easier to use.'};
     }
     if(mandatory && base.requiredConceptsFound.length>=minimum) return {...base,decision:DECISIONS.PASS_WITH_FEEDBACK,pass:true,feedback:rubric.sufficientFeedback || rubric.clarificationFeedback};
+    if((rubric.passConditions.mandatoryMeaningIds || []).length && mandatory) return {...base,decision:DECISIONS.CLARIFY,pass:false,feedback:`Your response is relevant but needs more detail. Clarify: ${base.missingConcepts.map(x=>x.label).join('; ')}.`};
     if(ratio>=0.5) return {...base,decision:DECISIONS.CLARIFY,pass:false,feedback:`You are close. Clarify: ${base.missingConcepts.map(x=>x.label).join('; ')}.`};
     return {...base,decision:DECISIONS.RETRY,pass:false,feedback:rubric.retryFeedback};
   }
