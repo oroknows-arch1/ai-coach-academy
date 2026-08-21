@@ -1,6 +1,8 @@
 (() => {
   'use strict';
 
+  if (location.hash.startsWith('#semantic-test')) return;
+
   const STORAGE_KEY = 'aiCoachAcademy.v1';
   const course = window.ACADEMY_COURSE;
   if (!course || !Array.isArray(course.LESSONS) || !course.LESSONS.length) return;

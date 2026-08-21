@@ -10,6 +10,7 @@ AI Coach Academy is an OROK Studios workplace-learning application for practical
 - Reusable Toolkit outputs
 - Module and Academy completion records
 - Hidden seven-tap Developer Console for QA
+- Private, no-cost semantic formative-assessment vertical slice for Lessons 1.1, 1.5 and 4.2
 - Approved workplace imagery for desktop and mobile lesson contexts
 - OROK Studios master-brand hierarchy with task-first working screens
 

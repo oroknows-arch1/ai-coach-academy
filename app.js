@@ -2,22 +2,27 @@
   'use strict';
   const { MODULES, LESSONS } = window.ACADEMY_COURSE;
 
-  const STORAGE_KEY = 'aiCoachAcademy.v1';
+  const SEMANTIC_TEST_IDS = ['1-1','1-5','4-2'];
+  const semanticTestMatch = location.hash.match(/^#semantic-test(?:=(1-1|1-5|4-2))?/);
+  const SEMANTIC_TEST_MODE = !!semanticTestMatch;
+  const semanticTestTarget = semanticTestMatch?.[1] || '1-1';
+  const STORAGE_KEY = SEMANTIC_TEST_MODE ? 'aiCoachAcademy.semanticTest.v1' : 'aiCoachAcademy.v1';
   const LEGACY_KEY = 'aiCoachAcademy.frontendFoundation.v1';
   const main = document.getElementById('appMain');
   const navButtons = [...document.querySelectorAll('.nav-item')];
   const brandTrigger = document.getElementById('brandTrigger');
   const devBackdrop = document.getElementById('devBackdrop');
   const devStatus = document.getElementById('devStatus');
+  const devAssessment = document.getElementById('devAssessment');
   const closeDev = document.getElementById('closeDev');
   const lessonsFor = moduleId => LESSONS.filter(l => l.module === moduleId);
   const idOf = lesson => `${lesson.module}-${lesson.lesson}`;
   const firstId = idOf(LESSONS[0]);
 
   const defaultState = {
-    view: 'lesson', currentLessonId: firstId, currentModuleId: 1,
+    view: 'lesson', currentLessonId: SEMANTIC_TEST_MODE ? semanticTestTarget : firstId, currentModuleId: SEMANTIC_TEST_MODE ? Number(semanticTestTarget.split('-')[0]) : 1,
     completedLessons: [], certificates: [], toolkit: [], lessonWork: {},
-    qaUnlockAll: false, qaToolkitUnlocked: false
+    qaUnlockAll: SEMANTIC_TEST_MODE, qaToolkitUnlocked: false
   };
 
   let state = loadState();
@@ -38,19 +43,19 @@
     const ids = new Set(LESSONS.map(idOf));
     return {
       ...clone(defaultState), ...candidate,
-      currentLessonId: ids.has(candidate.currentLessonId) ? candidate.currentLessonId : firstId,
+      currentLessonId: ids.has(candidate.currentLessonId) ? candidate.currentLessonId : (SEMANTIC_TEST_MODE ? semanticTestTarget : firstId),
       currentModuleId: Number(candidate.currentModuleId) || 1,
       completedLessons: [...new Set((candidate.completedLessons || []).filter(id => ids.has(id)))],
       certificates: Array.isArray(candidate.certificates) ? candidate.certificates : [],
       toolkit: Array.isArray(candidate.toolkit) ? candidate.toolkit : [],
       lessonWork: candidate.lessonWork && typeof candidate.lessonWork === 'object' ? candidate.lessonWork : {},
-      qaUnlockAll: !!candidate.qaUnlockAll,
+      qaUnlockAll: SEMANTIC_TEST_MODE || !!candidate.qaUnlockAll,
       qaToolkitUnlocked: !!candidate.qaToolkitUnlocked
     };
   }
   function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
   function currentLesson(){ return LESSONS.find(l => idOf(l) === state.currentLessonId) || LESSONS[0]; }
-  function work(id = state.currentLessonId){ return { response:'', formativePassed:false, selectedAnswer:null, understandingPassed:false, ...(state.lessonWork[id] || {}) }; }
+  function work(id = state.currentLessonId){ return { response:'', formativePassed:false, selectedAnswer:null, understandingPassed:false, assessment:null, ...(state.lessonWork[id] || {}) }; }
   function setWork(id, patch){ state.lessonWork = { ...state.lessonWork, [id]: { ...work(id), ...patch } }; save(); }
   function complete(id){ return state.completedLessons.includes(id); }
   function moduleComplete(moduleId){ const ls=lessonsFor(moduleId); return ls.length && ls.every(l => complete(idOf(l))); }
@@ -91,34 +96,62 @@
   function renderLesson(){
     const l=currentLesson(); if(!lessonUnlocked(l)){ state.currentLessonId=firstId; save(); return renderLesson(); }
     const m=MODULES.find(x=>x.id===l.module), ls=lessonsFor(l.module), w=work(), done=complete(idOf(l)), saved=state.toolkit.some(t=>t.lessonId===idOf(l));
-    main.innerHTML=`<section class="lesson-layout"><aside class="workplace-panel"><img src="assets/workplace-desktop.png" alt="Professional lending coach working at a laptop in a modern office"></aside><article class="lesson-panel"><div class="lesson-topline"><div><button class="lesson-back" data-back-module type="button">Module ${l.module} · Lesson ${l.lesson}</button><span class="time-label">15–20 min</span></div><div class="progress-steps">${ls.map(x=>`<span class="progress-step ${complete(idOf(x))?'done':idOf(x)===idOf(l)?'current':''}"></span>`).join('')}</div></div><h1 class="lesson-title">${esc(l.title)}</h1><button class="concept-toggle" id="conceptToggle" aria-expanded="false" type="button"><span>Learn · Review the lesson concept</span><span class="plus">+</span></button><div id="conceptBody" class="concept-body hidden">${esc(l.concept)}</div><div class="mobile-workplace"><img src="assets/workplace-mobile.png" alt="Professional lending coach working at a laptop in a modern office"></div><section class="lesson-section scenario-section"><div class="section-icon">▣</div><div><h2>Workplace scenario</h2><p>${esc(l.scenario)}</p></div></section><section class="exercise-card"><div class="lesson-section exercise"><div class="section-icon">✎</div><div><h2>Try it</h2><p>${esc(l.exercise)}</p></div></div><textarea id="responseBox" class="response-box" placeholder="Write or edit your response here...">${esc(w.response)}</textarea><div class="response-meta"><span>Aim for a clear, checkable workplace response.</span><span id="responseCount">${w.response.trim().length} characters</span></div><button id="checkResponse" class="primary-action" type="button">CHECK MY ANSWER</button><div id="formativeFeedback" aria-live="polite">${w.formativePassed?'<div class="feedback good">Good. The response is developed enough to move to the understanding check.</div>':''}</div></section>${renderCheck(l,w)}<button id="saveToolkit" class="secondary-action" type="button" ${w.response.trim().length<20?'disabled':''}>${saved?'✓ Saved to Toolkit':'⌑  Save to Toolkit'}</button><button id="continueLesson" class="footer-action" type="button" ${done?'':'disabled'}>${done?nextLabel(l):'Complete understanding check to continue →'}</button></article></section>`;
+    const priorFeedback=w.assessment?assessmentFeedback(w.assessment):w.formativePassed?'<div class="feedback good">Good. The response is developed enough to move to the understanding check.</div>':'';
+    const testNav=SEMANTIC_TEST_MODE?`<nav class="semantic-test-nav" aria-label="Semantic test lessons"><strong>Testing:</strong>${SEMANTIC_TEST_IDS.map(id=>{const x=LESSONS.find(item=>idOf(item)===id);return `<button type="button" data-semantic-test="${id}" class="${id===idOf(l)?'active':''}">Lesson ${x.module}.${x.lesson}</button>`;}).join('')}</nav>`:'';
+    main.innerHTML=`${testNav}<section class="lesson-layout"><aside class="workplace-panel"><img src="assets/workplace-desktop.png" alt="Professional lending coach working at a laptop in a modern office"></aside><article class="lesson-panel"><div class="lesson-topline"><div><button class="lesson-back" data-back-module type="button">Module ${l.module} · Lesson ${l.lesson}</button><span class="time-label">15–20 min</span></div><div class="progress-steps">${ls.map(x=>`<span class="progress-step ${complete(idOf(x))?'done':idOf(x)===idOf(l)?'current':''}"></span>`).join('')}</div></div><h1 class="lesson-title">${esc(l.title)}</h1><button class="concept-toggle" id="conceptToggle" aria-expanded="false" type="button"><span>Learn · Review the lesson concept</span><span class="plus">+</span></button><div id="conceptBody" class="concept-body hidden">${esc(l.concept)}</div><div class="mobile-workplace"><img src="assets/workplace-mobile.png" alt="Professional lending coach working at a laptop in a modern office"></div><section class="lesson-section scenario-section"><div class="section-icon">▣</div><div><h2>Workplace scenario</h2><p>${esc(l.scenario)}</p></div></section><section class="exercise-card"><div class="lesson-section exercise"><div class="section-icon">✎</div><div><h2>Try it</h2><p>${esc(l.exercise)}</p></div></div><textarea id="responseBox" class="response-box" placeholder="Write or edit your response here...">${esc(w.response)}</textarea><div class="response-meta"><span>Aim for a clear, checkable workplace response.</span><span id="responseCount">${w.response.trim().length} characters</span></div><button id="checkResponse" class="primary-action" type="button">CHECK MY ANSWER</button><div id="formativeFeedback" aria-live="polite">${priorFeedback}</div></section>${renderCheck(l,w)}<button id="saveToolkit" class="secondary-action" type="button" ${w.response.trim().length<20?'disabled':''}>${saved?'✓ Saved to Toolkit':'⌑  Save to Toolkit'}</button><button id="continueLesson" class="footer-action" type="button" ${done?'':'disabled'}>${done?nextLabel(l):'Complete understanding check to continue →'}</button></article></section>`;
     bindLesson(l,w);
+  }
+  function assessmentFeedback(assessment){
+    const good=assessment.pass, label=assessment.decision?`<strong>${esc(assessment.decision)}</strong> — `:'';
+    return `<div class="feedback ${good?'good':'bad'}">${label}${esc(assessment.feedback || '')}</div>`;
   }
   function renderCheck(l,w){
     if(!w.formativePassed) return `<section class="check-card locked"><div class="check-header"><div class="check-badge">?</div><div><h2>Check your understanding</h2><p>Complete the formative response above to unlock the final understanding check.</p></div><span class="lock-icon">⌁</span></div></section>`;
-    return `<section class="check-card"><div class="check-header"><div class="check-badge">?</div><div><h2>Check your understanding</h2><p>${esc(l.checkQuestion)}</p></div><span class="lock-icon">✓</span></div><div class="check-options">${l.answers.map((a,i)=>`<button class="check-option ${w.selectedAnswer===i?'selected':''}" data-answer="${i}" type="button">${esc(a)}</button>`).join('')}</div>${w.selectedAnswer!==null?'<button id="submitUnderstanding" class="primary-action" type="button">CONFIRM ANSWER</button>':''}<div id="understandingFeedback" aria-live="polite">${w.understandingPassed?'<div class="feedback good">Correct. You have confirmed the core lesson principle.</div>':''}</div></section>`;
+    return `<section class="check-card"><div class="check-header"><div class="check-badge">?</div><div><h2>Check your understanding</h2><p>${esc(l.checkQuestion)}</p></div><span class="lock-icon">✓</span></div><div class="check-options">${l.answers.map((a,i)=>`<button class="check-option ${w.selectedAnswer===i?'selected':''}" data-answer="${i}" type="button">${esc(a)}</button>`).join('')}</div>${w.selectedAnswer!==null?'<button id="submitUnderstanding" class="primary-action" type="button">CONFIRM ANSWER</button>':''}<div id="understandingFeedback" aria-live="polite">${w.understandingPassed?`<div class="feedback good">${esc(l.correctFeedback || 'Correct. You have confirmed the core lesson principle.')}</div>`:''}</div></section>`;
   }
   function bindLesson(l,w){
     const id=idOf(l), toggle=document.getElementById('conceptToggle'), body=document.getElementById('conceptBody'), box=document.getElementById('responseBox');
     toggle.addEventListener('click',()=>{ const open=toggle.getAttribute('aria-expanded')==='true'; toggle.setAttribute('aria-expanded',String(!open)); body.classList.toggle('hidden',open); });
     box.addEventListener('input',()=>{ setWork(id,{response:box.value}); document.getElementById('responseCount').textContent=`${box.value.trim().length} characters`; document.getElementById('saveToolkit').disabled=box.value.trim().length<20; });
-    document.getElementById('checkResponse').addEventListener('click',()=>{
+    document.getElementById('checkResponse').addEventListener('click',async()=>{
       const text=box.value.trim();
-      const assessment=window.ACADEMY_SCORE_RESPONSE
-        ? window.ACADEMY_SCORE_RESPONSE(text)
-        : {pass:text.length>=80};
+      const rubric=window.ACADEMY_LESSON_RUBRICS?.[id];
+      const button=document.getElementById('checkResponse');
+      let assessment;
+      if(rubric && window.ACADEMY_SEMANTIC_SCORER && window.ACADEMY_SEMANTIC_MODEL){
+        button.disabled=true; button.textContent='CHECKING ON THIS DEVICE…';
+        assessment=await window.ACADEMY_SEMANTIC_SCORER.assess({lessonId:id,response:text,rubric,embed:window.ACADEMY_SEMANTIC_MODEL.embed});
+      } else {
+        assessment=window.ACADEMY_SCORE_RESPONSE?window.ACADEMY_SCORE_RESPONSE(text):{pass:false,feedback:'The response checker is unavailable. Please try again.'};
+      }
       const passed=assessment.pass;
-      setWork(id,{response:text,formativePassed:passed,selectedAnswer:passed?w.selectedAnswer:null,understandingPassed:passed?w.understandingPassed:false});
-      if(passed) renderLesson(); else document.getElementById('formativeFeedback').innerHTML='<div class="feedback bad">Add a little more about the task, the workplace context and what a useful outcome should look like.</div>';
+      setWork(id,{response:text,formativePassed:passed,assessment:rubric?assessment:null,selectedAnswer:passed?w.selectedAnswer:null,understandingPassed:passed?w.understandingPassed:false});
+      if(rubric) updateDeveloperAssessment(assessment);
+      if(rubric || passed) renderLesson();
+      else {button.disabled=false;button.textContent='CHECK MY ANSWER';document.getElementById('formativeFeedback').innerHTML=assessmentFeedback(assessment);}
     });
     main.querySelectorAll('[data-answer]').forEach(b=>b.addEventListener('click',()=>{ setWork(id,{selectedAnswer:Number(b.dataset.answer),understandingPassed:false}); renderLesson(); }));
     const submit=document.getElementById('submitUnderstanding'); if(submit) submit.addEventListener('click',()=>{
       const now=work(id); if(now.selectedAnswer===l.correct){ setWork(id,{understandingPassed:true}); completeLesson(l); renderLesson(); }
-      else document.getElementById('understandingFeedback').innerHTML='<div class="feedback bad">Not quite. Choose the answer that keeps evidence, boundaries and human accountability visible.</div>';
+      else document.getElementById('understandingFeedback').innerHTML=`<div class="feedback bad">${esc(l.incorrectFeedback || 'Not quite. Choose the answer that keeps evidence, boundaries and human accountability visible.')}</div>`;
     });
     document.getElementById('saveToolkit').addEventListener('click',()=>saveToolkit(l,box.value.trim()));
     document.getElementById('continueLesson').addEventListener('click',()=>{ if(!complete(id)) return; const next=nextLesson(l); if(next) openLesson(idOf(next)); else setView('certificates'); });
     document.querySelector('[data-back-module]').addEventListener('click',()=>openModule(l.module));
+    main.querySelectorAll('[data-semantic-test]').forEach(button=>button.addEventListener('click',()=>openLesson(button.dataset.semanticTest)));
+  }
+  function updateDeveloperAssessment(assessment){
+    if(!devAssessment)return;
+    const model=window.ACADEMY_SEMANTIC_MODEL?.getStatus?.() || {state:'unavailable'};
+    devAssessment.textContent=JSON.stringify({
+      lessonId:assessment.lessonId,rubricId:assessment.rubricId,
+      detectedMeanings:assessment.detectedMeanings,evidenceSpans:assessment.evidenceSpans,
+      meaningScores:assessment.meaningScores,
+      requiredConceptsFound:assessment.requiredConceptsFound,missingConcepts:assessment.missingConcepts,
+      contradictions:assessment.contradictions,semanticConfidence:assessment.semanticConfidence,
+      triggeredRiskRules:assessment.triggeredRiskRules,finalDecision:assessment.decision,
+      modelLoad:{...model,assessmentStatus:assessment.modelStatus}
+    },null,2);
   }
   function completeLesson(l){ const id=idOf(l); if(!state.completedLessons.includes(id)) state.completedLessons.push(id); ensureCertificates(l.module); save(); }
   function nextLesson(l){ const i=LESSONS.findIndex(x=>idOf(x)===idOf(l)); return i>=0&&i<LESSONS.length-1?LESSONS[i+1]:null; }
