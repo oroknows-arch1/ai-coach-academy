@@ -2,7 +2,11 @@
   'use strict';
   const { MODULES, LESSONS } = window.ACADEMY_COURSE;
 
-  const STORAGE_KEY = 'aiCoachAcademy.v1';
+  const SEMANTIC_TEST_IDS = ['1-1','1-5','4-2'];
+  const semanticTestMatch = location.hash.match(/^#semantic-test(?:=(1-1|1-5|4-2))?/);
+  const SEMANTIC_TEST_MODE = !!semanticTestMatch;
+  const semanticTestTarget = semanticTestMatch?.[1] || '1-1';
+  const STORAGE_KEY = SEMANTIC_TEST_MODE ? 'aiCoachAcademy.semanticTest.v1' : 'aiCoachAcademy.v1';
   const LEGACY_KEY = 'aiCoachAcademy.frontendFoundation.v1';
   const main = document.getElementById('appMain');
   const navButtons = [...document.querySelectorAll('.nav-item')];
@@ -16,7 +20,7 @@
   const firstId = idOf(LESSONS[0]);
 
   const defaultState = {
-    view: 'lesson', currentLessonId: firstId, currentModuleId: 1,
+    view: 'lesson', currentLessonId: SEMANTIC_TEST_MODE ? semanticTestTarget : firstId, currentModuleId: SEMANTIC_TEST_MODE ? Number(semanticTestTarget.split('-')[0]) : 1,
     completedLessons: [], certificates: [], toolkit: [], lessonWork: {},
     qaUnlockAll: false, qaToolkitUnlocked: false
   };
@@ -39,13 +43,13 @@
     const ids = new Set(LESSONS.map(idOf));
     return {
       ...clone(defaultState), ...candidate,
-      currentLessonId: ids.has(candidate.currentLessonId) ? candidate.currentLessonId : firstId,
+      currentLessonId: ids.has(candidate.currentLessonId) ? candidate.currentLessonId : (SEMANTIC_TEST_MODE ? semanticTestTarget : firstId),
       currentModuleId: Number(candidate.currentModuleId) || 1,
       completedLessons: [...new Set((candidate.completedLessons || []).filter(id => ids.has(id)))],
       certificates: Array.isArray(candidate.certificates) ? candidate.certificates : [],
       toolkit: Array.isArray(candidate.toolkit) ? candidate.toolkit : [],
       lessonWork: candidate.lessonWork && typeof candidate.lessonWork === 'object' ? candidate.lessonWork : {},
-      qaUnlockAll: !!candidate.qaUnlockAll,
+      qaUnlockAll: SEMANTIC_TEST_MODE || !!candidate.qaUnlockAll,
       qaToolkitUnlocked: !!candidate.qaToolkitUnlocked
     };
   }
@@ -93,7 +97,8 @@
     const l=currentLesson(); if(!lessonUnlocked(l)){ state.currentLessonId=firstId; save(); return renderLesson(); }
     const m=MODULES.find(x=>x.id===l.module), ls=lessonsFor(l.module), w=work(), done=complete(idOf(l)), saved=state.toolkit.some(t=>t.lessonId===idOf(l));
     const priorFeedback=w.assessment?assessmentFeedback(w.assessment):w.formativePassed?'<div class="feedback good">Good. The response is developed enough to move to the understanding check.</div>':'';
-    main.innerHTML=`<section class="lesson-layout"><aside class="workplace-panel"><img src="assets/workplace-desktop.png" alt="Professional lending coach working at a laptop in a modern office"></aside><article class="lesson-panel"><div class="lesson-topline"><div><button class="lesson-back" data-back-module type="button">Module ${l.module} · Lesson ${l.lesson}</button><span class="time-label">15–20 min</span></div><div class="progress-steps">${ls.map(x=>`<span class="progress-step ${complete(idOf(x))?'done':idOf(x)===idOf(l)?'current':''}"></span>`).join('')}</div></div><h1 class="lesson-title">${esc(l.title)}</h1><button class="concept-toggle" id="conceptToggle" aria-expanded="false" type="button"><span>Learn · Review the lesson concept</span><span class="plus">+</span></button><div id="conceptBody" class="concept-body hidden">${esc(l.concept)}</div><div class="mobile-workplace"><img src="assets/workplace-mobile.png" alt="Professional lending coach working at a laptop in a modern office"></div><section class="lesson-section scenario-section"><div class="section-icon">▣</div><div><h2>Workplace scenario</h2><p>${esc(l.scenario)}</p></div></section><section class="exercise-card"><div class="lesson-section exercise"><div class="section-icon">✎</div><div><h2>Try it</h2><p>${esc(l.exercise)}</p></div></div><textarea id="responseBox" class="response-box" placeholder="Write or edit your response here...">${esc(w.response)}</textarea><div class="response-meta"><span>Aim for a clear, checkable workplace response.</span><span id="responseCount">${w.response.trim().length} characters</span></div><button id="checkResponse" class="primary-action" type="button">CHECK MY ANSWER</button><div id="formativeFeedback" aria-live="polite">${priorFeedback}</div></section>${renderCheck(l,w)}<button id="saveToolkit" class="secondary-action" type="button" ${w.response.trim().length<20?'disabled':''}>${saved?'✓ Saved to Toolkit':'⌑  Save to Toolkit'}</button><button id="continueLesson" class="footer-action" type="button" ${done?'':'disabled'}>${done?nextLabel(l):'Complete understanding check to continue →'}</button></article></section>`;
+    const testNav=SEMANTIC_TEST_MODE?`<nav class="semantic-test-nav" aria-label="Semantic test lessons"><strong>Testing:</strong>${SEMANTIC_TEST_IDS.map(id=>{const x=LESSONS.find(item=>idOf(item)===id);return `<button type="button" data-semantic-test="${id}" class="${id===idOf(l)?'active':''}">Lesson ${x.module}.${x.lesson}</button>`;}).join('')}</nav>`:'';
+    main.innerHTML=`${testNav}<section class="lesson-layout"><aside class="workplace-panel"><img src="assets/workplace-desktop.png" alt="Professional lending coach working at a laptop in a modern office"></aside><article class="lesson-panel"><div class="lesson-topline"><div><button class="lesson-back" data-back-module type="button">Module ${l.module} · Lesson ${l.lesson}</button><span class="time-label">15–20 min</span></div><div class="progress-steps">${ls.map(x=>`<span class="progress-step ${complete(idOf(x))?'done':idOf(x)===idOf(l)?'current':''}"></span>`).join('')}</div></div><h1 class="lesson-title">${esc(l.title)}</h1><button class="concept-toggle" id="conceptToggle" aria-expanded="false" type="button"><span>Learn · Review the lesson concept</span><span class="plus">+</span></button><div id="conceptBody" class="concept-body hidden">${esc(l.concept)}</div><div class="mobile-workplace"><img src="assets/workplace-mobile.png" alt="Professional lending coach working at a laptop in a modern office"></div><section class="lesson-section scenario-section"><div class="section-icon">▣</div><div><h2>Workplace scenario</h2><p>${esc(l.scenario)}</p></div></section><section class="exercise-card"><div class="lesson-section exercise"><div class="section-icon">✎</div><div><h2>Try it</h2><p>${esc(l.exercise)}</p></div></div><textarea id="responseBox" class="response-box" placeholder="Write or edit your response here...">${esc(w.response)}</textarea><div class="response-meta"><span>Aim for a clear, checkable workplace response.</span><span id="responseCount">${w.response.trim().length} characters</span></div><button id="checkResponse" class="primary-action" type="button">CHECK MY ANSWER</button><div id="formativeFeedback" aria-live="polite">${priorFeedback}</div></section>${renderCheck(l,w)}<button id="saveToolkit" class="secondary-action" type="button" ${w.response.trim().length<20?'disabled':''}>${saved?'✓ Saved to Toolkit':'⌑  Save to Toolkit'}</button><button id="continueLesson" class="footer-action" type="button" ${done?'':'disabled'}>${done?nextLabel(l):'Complete understanding check to continue →'}</button></article></section>`;
     bindLesson(l,w);
   }
   function assessmentFeedback(assessment){
@@ -133,6 +138,7 @@
     document.getElementById('saveToolkit').addEventListener('click',()=>saveToolkit(l,box.value.trim()));
     document.getElementById('continueLesson').addEventListener('click',()=>{ if(!complete(id)) return; const next=nextLesson(l); if(next) openLesson(idOf(next)); else setView('certificates'); });
     document.querySelector('[data-back-module]').addEventListener('click',()=>openModule(l.module));
+    main.querySelectorAll('[data-semantic-test]').forEach(button=>button.addEventListener('click',()=>openLesson(button.dataset.semanticTest)));
   }
   function updateDeveloperAssessment(assessment){
     if(!devAssessment)return;
