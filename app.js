@@ -139,6 +139,7 @@
     devAssessment.textContent=JSON.stringify({
       lessonId:assessment.lessonId,rubricId:assessment.rubricId,
       detectedMeanings:assessment.detectedMeanings,evidenceSpans:assessment.evidenceSpans,
+      meaningScores:assessment.meaningScores,
       requiredConceptsFound:assessment.requiredConceptsFound,missingConcepts:assessment.missingConcepts,
       contradictions:assessment.contradictions,semanticConfidence:assessment.semanticConfidence,
       triggeredRiskRules:assessment.triggeredRiskRules,finalDecision:assessment.decision,

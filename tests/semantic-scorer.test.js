@@ -8,17 +8,15 @@ const rubrics = require('../lesson-rubrics.js');
 // real pinned ONNX model; these tests verify aggregation and hard-rule priority.
 function embedFor(foundIds = []) {
   return async texts => {
-    const dims = texts.length - 1;
-    const answer = Array(dims).fill(0);
-    const examples = texts.slice(1).map((_, i) => { const v=Array(dims).fill(0);v[i]=1;return v; });
     const rubric = activeRubric;
     const all=[...rubric.requiredMeanings,...rubric.supportingMeanings];
-    let offset=0;
-    for(const meaning of all){
-      for(let i=0;i<meaning.examples.length;i++) if(foundIds.includes(meaning.id)) answer[offset+i]=0.7;
-      offset+=meaning.examples.length;
-    }
-    return [answer,...examples];
+    const exampleOwner=new Map(all.flatMap((meaning,index)=>meaning.examples.map(example=>[example,index])));
+    return texts.map(text=>{
+      const vector=Array(all.length).fill(0);
+      if(exampleOwner.has(text))vector[exampleOwner.get(text)]=1;
+      else foundIds.forEach(id=>{const index=all.findIndex(x=>x.id===id);if(index>=0)vector[index]=0.7;});
+      return vector;
+    });
   };
 }
 let activeRubric;

@@ -38,20 +38,23 @@
 
     const meanings = [...rubric.requiredMeanings, ...(rubric.supportingMeanings || [])];
     const examples = meanings.flatMap(m=>m.examples.map(example=>({ meaning:m, example })));
+    const responseSegments = original.split(/(?<=[.!?])\s+|[;\n]+/).map(x=>x.trim()).filter(x=>x.length>=8);
+    const candidates = [original, ...responseSegments.filter(x=>x!==original)];
     let vectors;
-    try { vectors = await embed([original, ...examples.map(x=>x.example)]); }
+    try { vectors = await embed([...candidates, ...examples.map(x=>x.example)]); }
     catch (error) {
       return { ...base, decision:DECISIONS.RETRY, pass:false, feedback:rubric.technicalFeedback, modelStatus:'failed', technicalError:String(error?.message || error) };
     }
-    if (!vectors?.length || vectors.length !== examples.length + 1) return { ...base, decision:DECISIONS.RETRY, pass:false, feedback:rubric.technicalFeedback, modelStatus:'failed', technicalError:'Invalid embedding output' };
+    if (!vectors?.length || vectors.length !== examples.length + candidates.length) return { ...base, decision:DECISIONS.RETRY, pass:false, feedback:rubric.technicalFeedback, modelStatus:'failed', technicalError:'Invalid embedding output' };
 
-    const answerVector = vectors[0];
     const scores = new Map(meanings.map(m=>[m.id,{ score:-1, example:null }]));
-    examples.forEach((item,index)=>{ const score=cosine(answerVector,vectors[index+1]); if(score>scores.get(item.meaning.id).score)scores.set(item.meaning.id,{score,example:item.example}); });
+    const answerVectors=vectors.slice(0,candidates.length), exampleVectors=vectors.slice(candidates.length);
+    examples.forEach((item,index)=>answerVectors.forEach((answerVector,candidateIndex)=>{ const score=cosine(answerVector,exampleVectors[index]); if(score>scores.get(item.meaning.id).score)scores.set(item.meaning.id,{score,example:item.example,responseEvidence:candidates[candidateIndex]}); }));
+    base.meaningScores=[...scores].map(([id,evidence])=>({id,...evidence}));
     const threshold = rubric.passConditions.minimumConfidence;
     for (const meaning of meanings) {
       const evidence=scores.get(meaning.id), detected=evidence.score>=threshold;
-      if(detected){base.detectedMeanings.push({id:meaning.id,label:meaning.label,confidence:evidence.score});base.evidenceSpans.push({meaningId:meaning.id,matchedExample:evidence.example,confidence:evidence.score});}
+      if(detected){base.detectedMeanings.push({id:meaning.id,label:meaning.label,confidence:evidence.score});base.evidenceSpans.push({meaningId:meaning.id,responseEvidence:evidence.responseEvidence,matchedExample:evidence.example,confidence:evidence.score});}
     }
     const requiredIds=new Set(rubric.requiredMeanings.map(x=>x.id));
     base.requiredConceptsFound=base.detectedMeanings.filter(x=>requiredIds.has(x.id)).map(x=>x.id);
