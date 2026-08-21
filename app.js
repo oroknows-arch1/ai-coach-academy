@@ -22,7 +22,7 @@
   const defaultState = {
     view: 'lesson', currentLessonId: SEMANTIC_TEST_MODE ? semanticTestTarget : firstId, currentModuleId: SEMANTIC_TEST_MODE ? Number(semanticTestTarget.split('-')[0]) : 1,
     completedLessons: [], certificates: [], toolkit: [], lessonWork: {},
-    qaUnlockAll: false, qaToolkitUnlocked: false
+    qaUnlockAll: SEMANTIC_TEST_MODE, qaToolkitUnlocked: false
   };
 
   let state = loadState();

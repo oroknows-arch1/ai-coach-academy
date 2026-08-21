@@ -8,5 +8,6 @@ test('semantic review mode is isolated and exposes only the three trial lessons'
   assert.match(app,/aiCoachAcademy\.semanticTest\.v1/);
   assert.match(app,/\['1-1','1-5','4-2'\]/);
   assert.match(app,/data-semantic-test/);
+  assert.match(app,/qaUnlockAll: SEMANTIC_TEST_MODE/);
   assert.match(route,/semantic-test/);
 });
