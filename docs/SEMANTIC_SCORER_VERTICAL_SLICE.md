@@ -8,7 +8,11 @@ The browser lazily loads `Xenova/all-MiniLM-L6-v2` through pinned Transformers.j
 
 ## Governance
 
-Semantic similarity may detect alternative expression, but it cannot override deterministic block conditions or contradictions. Trial lessons require every required meaning. Low-confidence, incomplete and technical-failure results do not unlock the understanding check. The response remains in local browser storage and the learner is not penalised.
+Semantic similarity may detect alternative expression, but it cannot override deterministic block conditions or contradictions. Each rubric defines sufficient understanding and any mandatory industry-boundary meanings. Low-confidence, materially incomplete and technical-failure results do not unlock the understanding check. The response remains in local browser storage and the learner is not penalised.
+
+### Assessment principle
+
+Understanding earns progress; suggestions build capability; industry boundaries remain firm. Expression, grammar and style do not determine the result. Lesson 1.1 may return PASS WITH FEEDBACK when a meaningful task and workplace source/context are understood while boundary or verification detail could strengthen the prompt. Safety lessons 1.5 and 4.2 retain all required safety meanings as progress gates.
 
 Thresholds are rubric data, not one universal number. Lesson 1.1 uses calibrated per-meaning thresholds because a multi-part prompt dilutes short-clause similarity; all required meanings must still be present and hard rules retain priority.
 

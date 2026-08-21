@@ -13,7 +13,7 @@
     const labels = clean(rubric.requiredMeanings.map(x=>x.label).join(' ')).split(' ');
     const labelSet = new Set(labels);
     const labelHits = words.filter(w=>labelSet.has(w)).length;
-    return unique.size / words.length < 0.48 || (labelHits / words.length > 0.72 && !/[.!?]|\b(i|we|would|will|before|because|so|then|using|use)\b/i.test(text));
+    return unique.size / words.length < 0.56 || (labelHits / words.length > 0.65 && !/[.!?]|\b(i|we|would|will|before|because|so|then|using|use)\b/i.test(text));
   }
 
   async function assess({ lessonId, response, rubric, embed }) {
@@ -61,10 +61,13 @@
     base.semanticConfidence=base.detectedMeanings.length ? Math.min(...base.detectedMeanings.filter(x=>requiredIds.has(x.id)).map(x=>x.confidence).concat([1])) : 0;
     const ratio=base.requiredConceptsFound.length/rubric.requiredMeanings.length;
     const supporting=base.detectedMeanings.filter(x=>!requiredIds.has(x.id)).length;
+    const mandatory=(rubric.passConditions.mandatoryMeaningIds || []).every(id=>base.requiredConceptsFound.includes(id));
+    const minimum=rubric.passConditions.minimumRequiredMeanings ?? rubric.requiredMeanings.length;
     if(ratio===1){
       const decision=supporting>0?DECISIONS.PASS:DECISIONS.PASS_WITH_FEEDBACK;
       return {...base,decision,pass:true,feedback:decision===DECISIONS.PASS?'Your response shows the required meaning and keeps the key safeguards visible.':'Your response meets the core requirement. Consider adding the audience, format or human review detail to make it easier to use.'};
     }
+    if(mandatory && base.requiredConceptsFound.length>=minimum) return {...base,decision:DECISIONS.PASS_WITH_FEEDBACK,pass:true,feedback:rubric.sufficientFeedback || rubric.clarificationFeedback};
     if(ratio>=0.5) return {...base,decision:DECISIONS.CLARIFY,pass:false,feedback:`You are close. Clarify: ${base.missingConcepts.map(x=>x.label).join('; ')}.`};
     return {...base,decision:DECISIONS.RETRY,pass:false,feedback:rubric.retryFeedback};
   }

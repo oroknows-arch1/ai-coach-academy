@@ -27,6 +27,15 @@ test('all required meanings pass without requiring supporting wording', async()=
   const result=await assess('1-1','I would make a usable note from the authorised report, avoid assumptions, and check the result before it goes out.',ids);
   assert.equal(result.decision,'PASS WITH FEEDBACK'); assert.equal(result.pass,true);
 });
+test('Lesson 1.1 sufficient understanding passes with non-blocking suggestions',async()=>{
+  const original='A follow up email to lender Mel. Taking notes from our past shadow sessions the email needs to clarify more education is needed on company policies required for customer service. We need to see more independent advice given without looking to coaches. We will see results from starting to closing of sessions without seeking coaches help. We will see how results will be depending on lending knowledge, understanding and communication to customer.';
+  const result=await assess('1-1',original,['task-output','approved-source','audience-tone']);
+  assert.equal(result.decision,'PASS WITH FEEDBACK'); assert.equal(result.pass,true); assert.match(result.feedback,/strengthen/i);
+});
+test('Lesson 1.1 still retries when no meaningful task is demonstrated',async()=>{
+  const result=await assess('1-1','Maybe use AI for something helpful.',['approved-source']);
+  assert.equal(result.decision,'RETRY'); assert.equal(result.pass,false);
+});
 test('partial meaning asks for clarification and does not unlock',async()=>{
   const result=await assess('1-5','I will use the approved workplace system and remove identifiers before asking for a summary.',['approved-system','data-minimisation']);
   assert.equal(result.decision,'CLARIFY'); assert.equal(result.pass,false); assert.equal(result.missingConcepts[0].id,'handling-rules');

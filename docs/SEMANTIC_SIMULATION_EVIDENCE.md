@@ -24,3 +24,7 @@ These cases are the regression contract for each trial lesson. Automated unit ca
 | Unsafe/compliance-breaking | BLOCKED where applicable | BLOCKED | BLOCKED |
 
 False-pass focus: vocabulary stuffing, polished unsafe statements, and permission bypasses. False-retry focus: concise expertise, EAL phrasing, transcription noise and indirect but complete answers.
+
+## Product-owner regression — Lesson 1.1
+
+The original 447-character response beginning “A follow up email to lender Mel” is preserved verbatim in the automated suite. Expected result: PASS WITH FEEDBACK. It demonstrates a meaningful email task, workplace context/source and intended coaching outcome. Approval/source status, non-invention boundary and verification are strengthening suggestions rather than progress blockers for this lesson.
