@@ -4,7 +4,7 @@
   // Keep the reviewed workplace artwork wired to the correct responsive slots.
   // Desktop uses the approved high-resolution workplace image; mobile remains unchanged.
   const approvedSources = {
-    'assets/workplace-desktop.png': 'assets/workplace-desktop-approved.webp?v=20260825-1800',
+    'assets/workplace-desktop.png': 'assets/workplace-desktop-approved.jpg?v=20260825-1815',
     'assets/workplace-mobile.png': 'assets/workplace-mobile.webp?v=20260821-0606'
   };
 
