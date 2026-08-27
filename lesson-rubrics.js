@@ -50,7 +50,7 @@
       id: 'rubric-1-5-v2', lessonId: '1-5',
       requiredMeanings: [
         { id: 'approved-system', label: 'use an approved workplace system', threshold: 0.35, examples: ['Using the approved workplace system, draft a coaching summary.', 'Use the approved workplace AI system for this task.', 'Keep the task inside an approved organisational AI system.', 'Use only the company-approved Copilot environment.'] },
-        { id: 'data-minimisation', label: 'remove unnecessary personal or sensitive information', examples: ['Remove customer names and account numbers before using the examples.', 'Share only de-identified details needed for the coaching summary.'] }
+        { id: 'data-minimisation', label: 'remove unnecessary personal or sensitive information', threshold: 0.50, examples: ['Remove customer names, account numbers, contact details and other identifying information.', 'Use de-identified examples and include only the minimum information necessary.', 'Share only non-identifying details needed for the task.'] }
       ],
       supportingMeanings: [
         { id: 'handling-rules', label: 'follow access and information-handling rules', examples: ['Respect existing access controls and handling policy.', 'Confirm the material is allowed in that system before use.'] },

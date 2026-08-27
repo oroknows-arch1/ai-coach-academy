@@ -43,7 +43,9 @@ test('Lesson 1.1 relevant but incomplete task asks for clarification',async()=>{
 test('Lesson 1.5 strong answer passes when it covers the task\'s two core meanings',async()=>{
   const response='Using the approved workplace system, draft a coaching summary from de-identified examples. Remove customer names, account numbers, contact details and anything else that could identify them. Include only the information needed to explain the coaching issue, expected standard and next action.';
   const approvedSystem=rubrics['1-5'].requiredMeanings.find(x=>x.id==='approved-system');
+  const dataMinimisation=rubrics['1-5'].requiredMeanings.find(x=>x.id==='data-minimisation');
   assert.ok(approvedSystem.threshold<=0.35); assert.ok(approvedSystem.examples.some(x=>/approved workplace system/i.test(x)));
+  assert.ok(dataMinimisation.threshold>=0.50); assert.ok(dataMinimisation.examples.every(x=>!/coaching summary/i.test(x)));
   const result=await assess('1-5',response,['approved-system','data-minimisation']);
   assert.equal(result.decision,'PASS WITH FEEDBACK'); assert.equal(result.pass,true); assert.deepEqual(result.missingConcepts,[]);
 });
