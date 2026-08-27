@@ -47,18 +47,20 @@
     },
     '1-5': {
       ...common,
-      id: 'rubric-1-5-v1', lessonId: '1-5',
+      id: 'rubric-1-5-v2', lessonId: '1-5',
       requiredMeanings: [
         { id: 'approved-system', label: 'use an approved workplace system', examples: ['Keep the task inside an approved organisational AI system.', 'Use only the company-approved Copilot environment.'] },
-        { id: 'data-minimisation', label: 'remove unnecessary personal or sensitive information', examples: ['Remove customer names and account numbers before using the examples.', 'Share only de-identified details needed for the coaching summary.'] },
-        { id: 'handling-rules', label: 'follow access and information-handling rules', examples: ['Respect existing access controls and handling policy.', 'Confirm the material is allowed in that system before use.'] }
+        { id: 'data-minimisation', label: 'remove unnecessary personal or sensitive information', examples: ['Remove customer names and account numbers before using the examples.', 'Share only de-identified details needed for the coaching summary.'] }
       ],
-      supportingMeanings: [{ id: 'human-check', label: 'human review before use', examples: ['Review the draft before sharing it.', 'A coach checks the result against the safe source.'] }],
+      supportingMeanings: [
+        { id: 'handling-rules', label: 'follow access and information-handling rules', examples: ['Respect existing access controls and handling policy.', 'Confirm the material is allowed in that system before use.'] },
+        { id: 'human-check', label: 'human review before use', examples: ['Review the draft before sharing it.', 'A coach checks the result against the safe source.'] }
+      ],
       validExpressionExamples: ['In approved Copilot, use de-identified examples with names and account references removed. Include only what is needed, follow access rules and review the summary before sharing.'],
       incompleteExamples: ['Take the names out and ask AI.', 'Mark it confidential in the prompt.'],
       incorrectMeanings: ['A confidentiality instruction makes an unapproved tool safe.', 'Sensitive data can be removed after it is uploaded.'],
       contradictions: [{ id: 'upload-then-remove', patterns: ['paste everything first', 'upload everything first', 'remove sensitive details later'] }],
-      riskRequirements: ['approved-system', 'data-minimisation', 'handling-rules'],
+      riskRequirements: ['approved-system', 'data-minimisation'],
       blockConditions: [
         { id: 'unapproved-tool', patterns: ['any ai tool', 'personal chatgpt', 'public ai', 'unapproved tool', 'tool is not approved', 'not approved but'] },
         { id: 'sensitive-upload', patterns: ['include customer names', 'include account numbers', 'paste customer details', 'upload customer details', 'full customer file'] }

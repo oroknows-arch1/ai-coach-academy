@@ -40,9 +40,18 @@ test('Lesson 1.1 relevant but incomplete task asks for clarification',async()=>{
   const result=await assess('1-1','Write a follow-up email to the lender about the coaching sessions.',['task-output']);
   assert.equal(result.decision,'CLARIFY'); assert.equal(result.pass,false);
 });
-test('partial meaning asks for clarification and does not unlock',async()=>{
-  const result=await assess('1-5','I will use the approved workplace system and remove identifiers before asking for a summary.',['approved-system','data-minimisation']);
-  assert.equal(result.decision,'CLARIFY'); assert.equal(result.pass,false); assert.equal(result.missingConcepts[0].id,'handling-rules');
+test('Lesson 1.5 strong answer passes when it covers the task\'s two core meanings',async()=>{
+  const response='Using the approved workplace system, draft a coaching summary from de-identified examples. Remove customer names, account numbers, contact details and anything else that could identify them. Include only the information needed to explain the coaching issue, expected standard and next action.';
+  const result=await assess('1-5',response,['approved-system','data-minimisation']);
+  assert.equal(result.decision,'PASS WITH FEEDBACK'); assert.equal(result.pass,true); assert.deepEqual(result.missingConcepts,[]);
+});
+test('Lesson 1.5 partial answer asks for clarification and does not unlock',async()=>{
+  const result=await assess('1-5','Use the approved workplace system to prepare the coaching summary.',['approved-system']);
+  assert.equal(result.decision,'CLARIFY'); assert.equal(result.pass,false); assert.equal(result.missingConcepts[0].id,'data-minimisation');
+});
+test('Lesson 1.5 unsafe answer remains blocked',async()=>{
+  const result=await assess('1-5','Use a public AI tool and paste customer details into it to draft the summary.',['approved-system','data-minimisation']);
+  assert.equal(result.decision,'BLOCKED'); assert.equal(result.pass,false); assert.ok(result.triggeredRiskRules.length);
 });
 test('hard risk blocks regardless of semantic matches',async()=>{
   const ids=rubrics['4-2'].requiredMeanings.map(x=>x.id);
