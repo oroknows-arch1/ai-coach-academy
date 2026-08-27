@@ -49,7 +49,7 @@
       ...common,
       id: 'rubric-1-5-v2', lessonId: '1-5',
       requiredMeanings: [
-        { id: 'approved-system', label: 'use an approved workplace system', examples: ['Keep the task inside an approved organisational AI system.', 'Use only the company-approved Copilot environment.'] },
+        { id: 'approved-system', label: 'use an approved workplace system', threshold: 0.35, examples: ['Using the approved workplace system, draft a coaching summary.', 'Use the approved workplace AI system for this task.', 'Keep the task inside an approved organisational AI system.', 'Use only the company-approved Copilot environment.'] },
         { id: 'data-minimisation', label: 'remove unnecessary personal or sensitive information', examples: ['Remove customer names and account numbers before using the examples.', 'Share only de-identified details needed for the coaching summary.'] }
       ],
       supportingMeanings: [
