@@ -211,5 +211,3 @@
 
   render();
 })();
-
-// Semantic behavioural test deployment.
