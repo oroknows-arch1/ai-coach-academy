@@ -2,9 +2,9 @@
   'use strict';
 
   // Keep the reviewed workplace artwork wired to the correct responsive slots.
-  // The versioned mobile URL prevents stale/corrupted browser cache reuse.
+  // Desktop uses the approved high-resolution workplace image; mobile remains unchanged.
   const approvedSources = {
-    'assets/workplace-desktop.png': 'assets/workplace-desktop.jpg',
+    'assets/workplace-desktop.png': 'assets/workplace-desktop-approved.jpg?v=20260825-1815',
     'assets/workplace-mobile.png': 'assets/workplace-mobile.webp?v=20260821-0606'
   };
 
