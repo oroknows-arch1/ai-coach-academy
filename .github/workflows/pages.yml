@@ -2,9 +2,7 @@ name: Deploy AI Coach Academy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
-      - feature/no-cost-semantic-response-scorer
+    branches: [main]
   workflow_dispatch:
 
 permissions:
