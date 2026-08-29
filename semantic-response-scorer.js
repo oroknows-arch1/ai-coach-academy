@@ -71,8 +71,8 @@
       return {...base,decision:DECISIONS.PASS,pass:true,feedback:rubric.successFeedback || 'Good. Your response covers the actions needed for this task.'};
     }
     if(mandatory && base.requiredConceptsFound.length>=minimum) return {...base,decision:DECISIONS.PASS_WITH_FEEDBACK,pass:true,feedback:missingFeedback(rubric,base.missingConcepts)};
-    if((rubric.passConditions.mandatoryMeaningIds || []).length && mandatory) return {...base,decision:DECISIONS.CLARIFY,pass:false,feedback:rubric.clarificationFeedback || `Your response is relevant but needs more detail. Clarify: ${base.missingConcepts.map(x=>x.label).join('; ')}.`};
-    if(ratio>=0.5) return {...base,decision:DECISIONS.CLARIFY,pass:false,feedback:`You are close. Clarify: ${base.missingConcepts.map(x=>x.label).join('; ')}.`};
+    if((rubric.passConditions.mandatoryMeaningIds || []).length && mandatory) return {...base,decision:DECISIONS.CLARIFY,pass:false,feedback:missingFeedback(rubric,base.missingConcepts,'You are on the right track.')};
+    if(ratio>=0.5) return {...base,decision:DECISIONS.CLARIFY,pass:false,feedback:missingFeedback(rubric,base.missingConcepts,'You are close.')};
     return {...base,decision:DECISIONS.RETRY,pass:false,feedback:rubric.retryFeedback};
   }
 

@@ -28,11 +28,13 @@
       id: 'rubric-1-1-v1', lessonId: '1-1',
       requiredMeanings: [
         { id: 'task-output', label: 'a clear task and required output', threshold: 0.52, examples: ['Draft a concise coaching note for regional lending leaders.', 'Make a short briefing for the lending managers.', 'Summarise the two concerns in plain language for regional leaders.'] },
-        { id: 'approved-source', label: 'a workplace source or context is identified', threshold: 0.38, examples: ['Use only the approved quality report.', 'Base it on the authorised quality results provided.', 'Use notes from our previous shadow sessions.', 'Taking notes from past coaching sessions, prepare the follow-up.', 'Summarise the concerns from the approved report.'] },
-        { id: 'boundary', label: 'a boundary limits invention or unsupported claims', threshold: 0.37, examples: ['Do not invent causes and flag anything the report does not support.', 'Separate evidence from assumptions and leave unknowns marked.', 'Do not name individual staff or guess at the causes.'] },
-        { id: 'verification', label: 'important output will be checked by a person', threshold: 0.45, examples: ['List the claims I must verify before sharing.', 'I will compare key points with the source before sending it.', 'Show me the draft so I can compare it with the report before it goes out.'] }
+        { id: 'approved-source', label: 'the approved quality report is used', threshold: 0.50, examples: ['Use only the approved quality report.', 'Base it on the authorised quality results provided.', 'Use notes from our previous shadow sessions.', 'Taking notes from past coaching sessions, prepare the follow-up.', 'Summarise the concerns from the approved report.'] },
+        { id: 'verification', label: 'the result will be checked before sharing', threshold: 0.40, examples: ['List the claims I must verify before sharing.', 'I will compare key points with the source before sending it.', 'Show me the draft so I can compare it with the report before it goes out.', 'I will check the note before sharing it.'] }
       ],
-      supportingMeanings: [{ id: 'audience-tone', label: 'audience or useful format', examples: ['Use a professional tone and headings for regional leaders.', 'Keep it brief and practical for the managers.'] }],
+      supportingMeanings: [
+        { id: 'boundary', label: 'unsupported details are not added', threshold: 0.37, examples: ['Do not invent causes and flag anything the report does not support.', 'Separate evidence from assumptions and leave unknowns marked.', 'Do not name individual staff or guess at the causes.'] },
+        { id: 'audience-tone', label: 'audience or useful format', examples: ['Use a professional tone and headings for regional leaders.', 'Keep it brief and practical for the managers.'] }
+      ],
       validExpressionExamples: [
         'Using the approved quality report, draft a short coaching note for regional leaders. Do not guess why issues happened. Flag unsupported points and show what I need to check before sharing.',
         'Can you make the managers a brief from our authorised report only? Keep facts separate from assumptions and I will check the important claims against the report.'
@@ -46,11 +48,10 @@
       ],
       blockConditions: [],
       passConditions: { requiredMeaningRatio: 1, minimumRequiredMeanings: 2, mandatoryMeaningIds: ['task-output'], supportingMeaningCount: 0, minimumConfidence: 0.42 },
-      successFeedback: 'Good. You gave Copilot a clear task, an approved source, sensible limits and a final check.',
+      successFeedback: 'Good. You gave Copilot a clear task, the approved report and a final check.',
       meaningFeedback: {
         'task-output': 'Say that Copilot should create a short coaching note for regional leaders.',
         'approved-source': 'Say that Copilot should use only the approved quality report.',
-        'boundary': 'Tell Copilot not to add or guess details that the report does not support.',
         'verification': 'Say what you will check against the report before sharing the note.'
       },
       retryFeedback: 'Say what Copilot should write, that it should use the approved quality report, and what you will check before sharing it.',
