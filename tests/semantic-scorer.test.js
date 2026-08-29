@@ -25,7 +25,7 @@ async function assess(lessonId,response,foundIds){activeRubric=rubrics[lessonId]
 test('all required meanings pass without requiring supporting wording', async()=>{
   const ids=rubrics['1-1'].requiredMeanings.map(x=>x.id);
   const result=await assess('1-1','I would make a usable note from the authorised report, avoid assumptions, and check the result before it goes out.',ids);
-  assert.equal(result.decision,'PASS WITH FEEDBACK'); assert.equal(result.pass,true);
+  assert.equal(result.decision,'PASS'); assert.equal(result.pass,true);
 });
 test('Lesson 1.1 sufficient understanding passes with non-blocking suggestions',async()=>{
   const original='A follow up email to lender Mel. Taking notes from our past shadow sessions the email needs to clarify more education is needed on company policies required for customer service. We need to see more independent advice given without looking to coaches. We will see results from starting to closing of sessions without seeking coaches help. We will see how results will be depending on lending knowledge, understanding and communication to customer.';
@@ -40,6 +40,24 @@ test('Lesson 1.1 relevant but incomplete task asks for clarification',async()=>{
   const result=await assess('1-1','Write a follow-up email to the lender about the coaching sessions.',['task-output']);
   assert.equal(result.decision,'CLARIFY'); assert.equal(result.pass,false);
 });
+test('Lesson 1.1 blocks the exact unsafe behavioural-review answer',async()=>{
+  const response='Use any information you can find to write a convincing coaching note. Fill in any missing details and send the final version directly to the regional leaders.';
+  const result=await assess('1-1',response,['task-output','approved-source','boundary','verification']);
+  assert.equal(result.decision,'BLOCKED'); assert.equal(result.pass,false);
+});
+test('Lesson 1.1 accepts the unexpected but sound behavioural-review answer',async()=>{
+  const response='Summarise the two concerns from the approved report in plain language for regional leaders. Include what better performance should look like, but do not name individual staff or guess at the causes. Show me the draft so I can compare it with the report before it goes out.';
+  const result=await assess('1-1',response,['task-output','approved-source','boundary','verification']);
+  assert.equal(result.decision,'PASS'); assert.equal(result.pass,true);
+});
+test('Lesson 1.1 feedback names only the missing source',async()=>{
+  const result=await assess('1-1','Write a short note for regional leaders explaining the issues. I will check it before sharing.',['task-output','boundary','verification']);
+  assert.equal(result.decision,'PASS WITH FEEDBACK'); assert.match(result.feedback,/approved quality report/i); assert.doesNotMatch(result.feedback,/what you will check/i);
+});
+test('Lesson 1.1 feedback names only the missing final check',async()=>{
+  const result=await assess('1-1','Use the approved report to write a short coaching note for regional leaders.',['task-output','approved-source','boundary']);
+  assert.equal(result.decision,'PASS WITH FEEDBACK'); assert.match(result.feedback,/check against the report/i); assert.doesNotMatch(result.feedback,/email/i);
+});
 test('Lesson 1.5 strong answer passes when it covers the task\'s two core meanings',async()=>{
   const response='Using the approved workplace system, draft a coaching summary from de-identified examples. Remove customer names, account numbers, contact details and anything else that could identify them. Include only the information needed to explain the coaching issue, expected standard and next action.';
   const approvedSystem=rubrics['1-5'].requiredMeanings.find(x=>x.id==='approved-system');
@@ -47,7 +65,7 @@ test('Lesson 1.5 strong answer passes when it covers the task\'s two core meanin
   assert.ok(approvedSystem.threshold<=0.35); assert.ok(approvedSystem.examples.some(x=>/approved workplace system/i.test(x)));
   assert.ok(dataMinimisation.threshold>=0.50); assert.ok(dataMinimisation.examples.every(x=>!/coaching summary/i.test(x)));
   const result=await assess('1-5',response,['approved-system','data-minimisation']);
-  assert.equal(result.decision,'PASS WITH FEEDBACK'); assert.equal(result.pass,true); assert.deepEqual(result.missingConcepts,[]);
+  assert.equal(result.decision,'PASS'); assert.equal(result.pass,true); assert.deepEqual(result.missingConcepts,[]);
 });
 test('Lesson 1.5 partial answer asks for clarification and does not unlock',async()=>{
   const result=await assess('1-5','Use the approved workplace system to prepare the coaching summary.',['approved-system']);

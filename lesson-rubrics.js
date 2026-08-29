@@ -27,10 +27,10 @@
       ...common,
       id: 'rubric-1-1-v1', lessonId: '1-1',
       requiredMeanings: [
-        { id: 'task-output', label: 'a clear task and required output', threshold: 0.52, examples: ['Draft a concise coaching note for regional lending leaders.', 'Make a short briefing for the lending managers.'] },
-        { id: 'approved-source', label: 'a workplace source or context is identified', threshold: 0.38, examples: ['Use only the approved quality report.', 'Base it on the authorised quality results provided.', 'Use notes from our previous shadow sessions.', 'Taking notes from past coaching sessions, prepare the follow-up.'] },
-        { id: 'boundary', label: 'a boundary limits invention or unsupported claims', threshold: 0.37, examples: ['Do not invent causes and flag anything the report does not support.', 'Separate evidence from assumptions and leave unknowns marked.'] },
-        { id: 'verification', label: 'important output will be checked by a person', threshold: 0.45, examples: ['List the claims I must verify before sharing.', 'I will compare key points with the source before sending it.'] }
+        { id: 'task-output', label: 'a clear task and required output', threshold: 0.52, examples: ['Draft a concise coaching note for regional lending leaders.', 'Make a short briefing for the lending managers.', 'Summarise the two concerns in plain language for regional leaders.'] },
+        { id: 'approved-source', label: 'a workplace source or context is identified', threshold: 0.38, examples: ['Use only the approved quality report.', 'Base it on the authorised quality results provided.', 'Use notes from our previous shadow sessions.', 'Taking notes from past coaching sessions, prepare the follow-up.', 'Summarise the concerns from the approved report.'] },
+        { id: 'boundary', label: 'a boundary limits invention or unsupported claims', threshold: 0.37, examples: ['Do not invent causes and flag anything the report does not support.', 'Separate evidence from assumptions and leave unknowns marked.', 'Do not name individual staff or guess at the causes.'] },
+        { id: 'verification', label: 'important output will be checked by a person', threshold: 0.45, examples: ['List the claims I must verify before sharing.', 'I will compare key points with the source before sending it.', 'Show me the draft so I can compare it with the report before it goes out.'] }
       ],
       supportingMeanings: [{ id: 'audience-tone', label: 'audience or useful format', examples: ['Use a professional tone and headings for regional leaders.', 'Keep it brief and practical for the managers.'] }],
       validExpressionExamples: [
@@ -39,11 +39,22 @@
       ],
       incompleteExamples: ['Write a coaching note about the report.', 'Summarise this and make it sound professional.'],
       incorrectMeanings: ['Confidence or professional tone makes verification unnecessary.'],
-      contradictions: [{ id: 'trust-without-checking', patterns: ['trust it without checking', 'no need to verify', 'do not need to check', 'assume it is correct'] }],
+      contradictions: [
+        { id: 'trust-without-checking', patterns: ['trust it without checking', 'no need to verify', 'do not need to check', 'assume it is correct'] },
+        { id: 'invent-missing-information', patterns: ['fill in any missing details', 'make up missing details', 'invent missing details', 'use any information you can find'] },
+        { id: 'send-without-review', patterns: ['send the final version directly', 'send it directly to the regional leaders'] }
+      ],
       blockConditions: [],
       passConditions: { requiredMeaningRatio: 1, minimumRequiredMeanings: 2, mandatoryMeaningIds: ['task-output'], supportingMeaningCount: 0, minimumConfidence: 0.42 },
-      clarificationFeedback: 'Your request is on the right track. Add what information Copilot should use and what you will check before using the result.',
-      sufficientFeedback: 'Good. Your request is clear. You could make it stronger by saying what information Copilot should use and what you will check before sending the email.'
+      successFeedback: 'Good. You gave Copilot a clear task, an approved source, sensible limits and a final check.',
+      meaningFeedback: {
+        'task-output': 'Say that Copilot should create a short coaching note for regional leaders.',
+        'approved-source': 'Say that Copilot should use only the approved quality report.',
+        'boundary': 'Tell Copilot not to add or guess details that the report does not support.',
+        'verification': 'Say what you will check against the report before sharing the note.'
+      },
+      retryFeedback: 'Say what Copilot should write, that it should use the approved quality report, and what you will check before sharing it.',
+      blockedFeedback: 'This asks Copilot to invent information or send work without your review. Use only the approved report, do not fill in missing details and check the draft yourself before sharing it.'
     },
     '1-5': {
       ...common,

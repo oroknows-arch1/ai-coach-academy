@@ -5,6 +5,10 @@
   const clean = value => String(value || '').toLowerCase().replace(/[^a-z0-9' -]+/g, ' ').replace(/\s+/g, ' ').trim();
   const cosine = (a,b) => a.reduce((sum,v,i)=>sum+(v*(b[i]||0)),0);
   const containsPattern = (text, patterns=[]) => patterns.find(pattern => text.includes(clean(pattern))) || null;
+  const missingFeedback = (rubric, missing, opening='Good. Your request is clear.') => {
+    const suggestions=missing.map(item=>rubric.meaningFeedback?.[item.id] || `Add ${item.label}.`);
+    return suggestions.length ? `${opening} ${suggestions.join(' ')}` : opening;
+  };
 
   function keywordStuffing(text, rubric) {
     const words = clean(text).split(' ').filter(Boolean);
@@ -64,10 +68,9 @@
     const mandatory=(rubric.passConditions.mandatoryMeaningIds || []).every(id=>base.requiredConceptsFound.includes(id));
     const minimum=rubric.passConditions.minimumRequiredMeanings ?? rubric.requiredMeanings.length;
     if(ratio===1){
-      const decision=supporting>0?DECISIONS.PASS:DECISIONS.PASS_WITH_FEEDBACK;
-      return {...base,decision,pass:true,feedback:decision===DECISIONS.PASS?'Your response shows the required meaning and keeps the key safeguards visible.':'Your response meets the core requirement. Consider adding the audience, format or human review detail to make it easier to use.'};
+      return {...base,decision:DECISIONS.PASS,pass:true,feedback:rubric.successFeedback || 'Good. Your response covers the actions needed for this task.'};
     }
-    if(mandatory && base.requiredConceptsFound.length>=minimum) return {...base,decision:DECISIONS.PASS_WITH_FEEDBACK,pass:true,feedback:rubric.sufficientFeedback || rubric.clarificationFeedback};
+    if(mandatory && base.requiredConceptsFound.length>=minimum) return {...base,decision:DECISIONS.PASS_WITH_FEEDBACK,pass:true,feedback:missingFeedback(rubric,base.missingConcepts)};
     if((rubric.passConditions.mandatoryMeaningIds || []).length && mandatory) return {...base,decision:DECISIONS.CLARIFY,pass:false,feedback:rubric.clarificationFeedback || `Your response is relevant but needs more detail. Clarify: ${base.missingConcepts.map(x=>x.label).join('; ')}.`};
     if(ratio>=0.5) return {...base,decision:DECISIONS.CLARIFY,pass:false,feedback:`You are close. Clarify: ${base.missingConcepts.map(x=>x.label).join('; ')}.`};
     return {...base,decision:DECISIONS.RETRY,pass:false,feedback:rubric.retryFeedback};
