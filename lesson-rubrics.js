@@ -59,7 +59,7 @@
     },
     '1-5': {
       ...common,
-      id: 'rubric-1-5-v2', lessonId: '1-5',
+      id: 'rubric-1-5-v3', lessonId: '1-5',
       requiredMeanings: [
         { id: 'approved-system', label: 'use an approved workplace system', threshold: 0.35, examples: ['Using the approved workplace system, draft a coaching summary.', 'Use the approved workplace AI system for this task.', 'Keep the task inside an approved organisational AI system.', 'Use only the company-approved Copilot environment.'] },
         { id: 'data-minimisation', label: 'remove unnecessary personal or sensitive information', threshold: 0.50, examples: ['Remove customer names, account numbers, contact details and other identifying information.', 'Use de-identified examples and include only the minimum information necessary.', 'Share only non-identifying details needed for the task.'] }
@@ -71,16 +71,16 @@
       validExpressionExamples: ['In approved Copilot, use de-identified examples with names and account references removed. Include only what is needed, follow access rules and review the summary before sharing.'],
       incompleteExamples: ['Take the names out and ask AI.', 'Mark it confidential in the prompt.'],
       incorrectMeanings: ['A confidentiality instruction makes an unapproved tool safe.', 'Sensitive data can be removed after it is uploaded.'],
-      contradictions: [{ id: 'upload-then-remove', patterns: ['paste everything first', 'upload everything first', 'remove sensitive details later'] }],
+      contradictions: [{ id: 'upload-then-remove', patterns: ['paste everything first', 'upload everything first', 'remove sensitive details later', 'strip identifiers from the output after upload'] }],
       riskRequirements: ['approved-system', 'data-minimisation'],
       blockConditions: [
-        { id: 'unapproved-tool', patterns: ['any ai tool', 'personal chatgpt', 'public ai', 'unapproved tool', 'tool is not approved', 'not approved but'] },
-        { id: 'sensitive-upload', patterns: ['include customer names', 'include account numbers', 'paste customer details', 'upload customer details', 'full customer file'] }
+        { id: 'unapproved-tool', patterns: ['any ai tool', 'personal chatgpt', 'my own chatgpt', 'my chatgpt account', 'consumer chatgpt', 'public ai', 'external ai tool', 'outside the approved system', 'outside the company system', 'unapproved tool', 'tool is not approved', 'not approved but'] },
+        { id: 'sensitive-upload', patterns: ['include customer names', 'include account numbers', 'paste customer details', 'upload customer details', 'copy the raw customer details into the prompt', 'copy customer details into the prompt', 'put customer details into the prompt', 'send customer details to the ai', 'feed customer details into the ai', 'full customer file'] }
       ]
     },
     '4-2': {
       ...common,
-      id: 'rubric-4-2-v1', lessonId: '4-2',
+      id: 'rubric-4-2-v2', lessonId: '4-2',
       requiredMeanings: [
         { id: 'stop', label: 'do not use the tool while approval is unclear', examples: ['I would not upload the lending material yet.', 'Pause the request and do not test the unknown tool.'] },
         { id: 'confirm-approval', label: 'confirm whether the tool and use are approved', examples: ['Check the approved-tool register or ask the responsible policy owner.', 'Confirm the tool is authorised for this type of information.'] },
@@ -90,7 +90,7 @@
       validExpressionExamples: ['I would stop and not upload the file. I would check the approved-tool register and confirm the information-handling and access rules with the policy owner, then use an approved alternative if needed.'],
       incompleteExamples: ['I would ask whether it is approved.', 'I would remove the filename and test it.'],
       incorrectMeanings: ['A small test in an unapproved tool is acceptable.', 'Removing the filename removes the policy risk.'],
-      contradictions: [{ id: 'proceed-while-unclear', patterns: ['test it first', 'small test', 'try it anyway', 'proceed while', 'use it until told not to', 'remove the file name and proceed'] }],
+      contradictions: [{ id: 'proceed-while-unclear', patterns: ['test it first', 'use it for a small test', 'run a small test', 'do a small test', 'try it anyway', 'proceed while', 'go ahead temporarily', 'go ahead while approval is pending', 'use the tool while approval is pending', 'treat silence as approval', 'treat that as permission', 'proceed before approval is confirmed', 'use it until told not to', 'remove the file name and proceed'] }],
       riskRequirements: ['stop', 'confirm-approval', 'handling-boundary'],
       blockConditions: [
         { id: 'explicit-unapproved-use', patterns: ['use the unapproved tool', 'upload to the unapproved tool', 'send it to the tool anyway', 'use it even though it is not approved'] },

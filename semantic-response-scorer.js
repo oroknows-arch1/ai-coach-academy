@@ -4,7 +4,22 @@
   const DECISIONS = Object.freeze({ PASS:'PASS', PASS_WITH_FEEDBACK:'PASS WITH FEEDBACK', CLARIFY:'CLARIFY', RETRY:'RETRY', BLOCKED:'BLOCKED' });
   const clean = value => String(value || '').toLowerCase().replace(/[^a-z0-9' -]+/g, ' ').replace(/\s+/g, ' ').trim();
   const cosine = (a,b) => a.reduce((sum,v,i)=>sum+(v*(b[i]||0)),0);
-  const containsPattern = (text, patterns=[]) => patterns.find(pattern => text.includes(clean(pattern))) || null;
+  const SAFE_NEGATION_PREFIX = /\b(?:do not|don't|would not|wouldn't|will not|won't|should not|shouldn't|must not|mustn't|cannot|can't|never)\s*$/;
+  function containsPattern(text, patterns=[]) {
+    for (const pattern of patterns) {
+      const target = clean(pattern);
+      if (!target) continue;
+      let from = 0;
+      while (from <= text.length) {
+        const index = text.indexOf(target, from);
+        if (index < 0) break;
+        const before = text.slice(Math.max(0, index - 32), index);
+        if (!SAFE_NEGATION_PREFIX.test(before)) return pattern;
+        from = index + target.length;
+      }
+    }
+    return null;
+  }
   const missingFeedback = (rubric, missing, opening='Good. Your request is clear.') => {
     const suggestions=missing.map(item=>rubric.meaningFeedback?.[item.id] || `Add ${item.label}.`);
     return suggestions.length ? `${opening} ${suggestions.join(' ')}` : opening;
@@ -64,7 +79,6 @@
     base.missingConcepts=rubric.requiredMeanings.filter(x=>!base.requiredConceptsFound.includes(x.id)).map(x=>({id:x.id,label:x.label}));
     base.semanticConfidence=base.detectedMeanings.length ? Math.min(...base.detectedMeanings.filter(x=>requiredIds.has(x.id)).map(x=>x.confidence).concat([1])) : 0;
     const ratio=base.requiredConceptsFound.length/rubric.requiredMeanings.length;
-    const supporting=base.detectedMeanings.filter(x=>!requiredIds.has(x.id)).length;
     const mandatory=(rubric.passConditions.mandatoryMeaningIds || []).every(id=>base.requiredConceptsFound.includes(id));
     const minimum=rubric.passConditions.minimumRequiredMeanings ?? rubric.requiredMeanings.length;
     if(ratio===1){
@@ -76,7 +90,7 @@
     return {...base,decision:DECISIONS.RETRY,pass:false,feedback:rubric.retryFeedback};
   }
 
-  const api={ assess, DECISIONS, _test:{clean,cosine,keywordStuffing} };
+  const api={ assess, DECISIONS, _test:{clean,cosine,containsPattern,keywordStuffing} };
   if(typeof window!=='undefined')window.ACADEMY_SEMANTIC_SCORER=api;
   if(typeof module!=='undefined')module.exports=api;
 })();

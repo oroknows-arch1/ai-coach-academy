@@ -11,6 +11,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,3 +25,14 @@ jobs:
         run: npm run validate
       - name: Harness completion-state validation
         run: npm run harness
+      - name: Install pinned real-model runtime
+        run: npm install --no-save --ignore-scripts @huggingface/transformers@3.7.2
+      - name: Full real-model semantic simulation matrix
+        run: node scripts/real-model-simulation.mjs
+      - name: Preserve real-model evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: semantic-real-model-matrix
+          path: artifacts/real-model-semantic-matrix.*
+          if-no-files-found: warn
