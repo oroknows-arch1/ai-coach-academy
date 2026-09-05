@@ -25,10 +25,10 @@
   const RUBRICS = {
     '1-1': {
       ...common,
-      id: 'rubric-1-1-v2', lessonId: '1-1',
+      id: 'rubric-1-1-v3', lessonId: '1-1',
       requiredMeanings: [
         { id: 'task-output', label: 'a clear task and required output', threshold: 0.52, examples: ['Draft a concise coaching note for regional lending leaders.', 'Make a short briefing for the lending managers.', 'Summarise the two concerns in plain language for regional leaders.', 'Put together a short coaching note for regional leaders.', 'Make short coaching note for regional leaders.', 'Regional coaching note on both gaps and expected standard.'] },
-        { id: 'approved-source', label: 'the approved quality report is used', threshold: 0.50, examples: ['Use only the approved quality report.', 'Base it on the authorised quality results provided.', 'Summarise the concerns from the approved report.', 'Approved QA report only.', 'Use the approved QA results as the only source.'] },
+        { id: 'approved-source', label: 'the approved quality report is used', threshold: 0.50, examples: ['Use only the approved quality report.', 'Base it on the authorised quality results provided.', 'Summarise the concerns from the approved report.', 'Approved QA report only.', 'Use the approved QA results as the only source.', 'Using only the approved monthly quality report.'] },
         { id: 'verification', label: 'the result will be checked before sharing', threshold: 0.40, examples: ['List the claims I must verify before sharing.', 'I will compare key points with the source before sending it.', 'Show me the draft so I can compare it with the report before it goes out.', 'I will check the note before sharing it.', 'Check it against the report before sharing.', 'Return the draft for a source check before release.'] }
       ],
       supportingMeanings: [
@@ -59,10 +59,10 @@
     },
     '1-5': {
       ...common,
-      id: 'rubric-1-5-v4', lessonId: '1-5',
+      id: 'rubric-1-5-v5', lessonId: '1-5',
       requiredMeanings: [
         { id: 'approved-system', label: 'use an approved workplace system', threshold: 0.35, examples: ['Using the approved workplace system, draft a coaching summary.', 'Use the approved workplace AI system for this task.', 'Keep the task inside an approved organisational AI system.', 'Use only the company-approved Copilot environment.'] },
-        { id: 'data-minimisation', label: 'remove unnecessary personal or sensitive information', threshold: 0.50, examples: ['Remove customer names, account numbers, contact details and other identifying information.', 'Use de-identified examples and include only the minimum information necessary.', 'Share only non-identifying details needed for the task.', 'Strip out names, account numbers and contact details first.', 'De-identify PII and account identifiers and use the minimum data needed.', 'De-ID PII first; minimum coaching data only.'] }
+        { id: 'data-minimisation', label: 'remove unnecessary personal or sensitive information', threshold: 0.50, examples: ['Remove customer names, account numbers, contact details and other identifying information.', 'Use de-identified examples and include only the minimum information necessary.', 'Share only non-identifying details needed for the task.', 'Strip out names, account numbers and contact details first.', 'Strip out names, account numbers and contact details first, then use only the information needed.', 'De-identify PII and account identifiers and use the minimum data needed.', 'De-ID PII first; minimum coaching data only.'] }
       ],
       supportingMeanings: [
         { id: 'handling-rules', label: 'follow access and information-handling rules', examples: ['Respect existing access controls and handling policy.', 'Confirm the material is allowed in that system before use.'] },
@@ -80,11 +80,11 @@
     },
     '4-2': {
       ...common,
-      id: 'rubric-4-2-v3', lessonId: '4-2',
+      id: 'rubric-4-2-v4', lessonId: '4-2',
       requiredMeanings: [
-        { id: 'stop', label: 'do not use the tool while approval is unclear', examples: ['I would not upload the lending material yet.', 'Pause the request and do not test the unknown tool.', 'I would not use the unapproved tool.', 'Hold the material until approval is confirmed.', 'Pause before using the tool while approval is unclear.', "Don't upload yet; confirm approval before use."] },
-        { id: 'confirm-approval', label: 'confirm whether the tool and use are approved', examples: ['Check the approved-tool register or ask the responsible policy owner.', 'Confirm the tool is authorised for this type of information.'] },
-        { id: 'handling-boundary', label: 'confirm information handling and access boundaries', examples: ['Check whether sensitive lending information is permitted and who may access it.', 'Follow policy and access controls before moving any material.', 'Check what data and access rules apply before using it.', 'Confirm data classification, access control and handling requirements before transfer.', 'Check information handling and who can access before use.'] }
+        { id: 'stop', label: 'do not use the tool while approval is unclear', examples: ['I would not upload the lending material yet.', 'Pause the request and do not test the unknown tool.', 'I would not use the unapproved tool.', 'Hold the material until approval is confirmed.', 'Hold the payload until approval is confirmed.', 'Pause before using the tool while approval is unclear.', "Don't upload yet; confirm approval before use."] },
+        { id: 'confirm-approval', label: 'confirm whether the tool and use are approved', examples: ['Check the approved-tool register or ask the responsible policy owner.', 'Confirm the tool is authorised for this type of information.', 'Validate the AI service against the approved-tool register.'] },
+        { id: 'handling-boundary', label: 'confirm information handling and access boundaries', examples: ['Check whether sensitive lending information is permitted and who may access it.', 'Follow policy and access controls before moving any material.', 'Check what data and access rules apply before using it.', 'Confirm data classification, access control and handling requirements before transfer.', 'Confirm who can access the lending information and how it must be handled.'] }
       ],
       supportingMeanings: [{ id: 'safe-alternative', label: 'offer an approved alternative', examples: ['Use the approved internal system instead.', 'Offer a de-identified example in an authorised tool once permitted.'] }],
       validExpressionExamples: ['I would stop and not upload the file. I would check the approved-tool register and confirm the information-handling and access rules with the policy owner, then use an approved alternative if needed.'],
