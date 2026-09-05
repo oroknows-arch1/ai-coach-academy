@@ -2,7 +2,7 @@
   'use strict';
 
   const DECISIONS = Object.freeze({ PASS:'PASS', PASS_WITH_FEEDBACK:'PASS WITH FEEDBACK', CLARIFY:'CLARIFY', RETRY:'RETRY', BLOCKED:'BLOCKED' });
-  const clean = value => String(value || '').toLowerCase().replace(/[^a-z0-9' -]+/g, ' ').replace(/\s+/g, ' ').trim();
+  const clean = value => String(value || '').toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9' -]+/g, ' ').replace(/\s+/g, ' ').trim();
   const cosine = (a,b) => a.reduce((sum,v,i)=>sum+(v*(b[i]||0)),0);
   const SAFE_NEGATION_PREFIX = /\b(?:do not|don't|would not|wouldn't|will not|won't|should not|shouldn't|must not|mustn't|cannot|can't|never)\s*$/;
   function containsPattern(text, patterns=[]) {
@@ -24,6 +24,14 @@
     const suggestions=missing.map(item=>rubric.meaningFeedback?.[item.id] || `Add ${item.label}.`);
     return suggestions.length ? `${opening} ${suggestions.join(' ')}` : opening;
   };
+
+  function explicitMeaningMatch(text, meaning) {
+    const normalized=clean(text);
+    for (const pattern of meaning.explicitPatterns || []) {
+      if (pattern instanceof RegExp ? pattern.test(normalized) : normalized.includes(clean(pattern))) return String(pattern);
+    }
+    return null;
+  }
 
   function keywordStuffing(text, rubric) {
     const words = clean(text).split(' ').filter(Boolean);
@@ -76,8 +84,14 @@
     examples.forEach((item,index)=>answerVectors.forEach((answerVector,candidateIndex)=>{ const score=cosine(answerVector,exampleVectors[index]); if(score>scores.get(item.meaning.id).score)scores.set(item.meaning.id,{score,example:item.example,responseEvidence:candidates[candidateIndex]}); }));
     base.meaningScores=[...scores].map(([id,evidence])=>({id,...evidence}));
     for (const meaning of meanings) {
-      const evidence=scores.get(meaning.id), detected=evidence.score>=(meaning.threshold ?? rubric.passConditions.minimumConfidence);
-      if(detected){base.detectedMeanings.push({id:meaning.id,label:meaning.label,confidence:evidence.score});base.evidenceSpans.push({meaningId:meaning.id,responseEvidence:evidence.responseEvidence,matchedExample:evidence.example,confidence:evidence.score});}
+      const evidence=scores.get(meaning.id), explicitMatch=explicitMeaningMatch(original,meaning);
+      const semanticMatch=evidence.score>=(meaning.threshold ?? rubric.passConditions.minimumConfidence);
+      const detected=meaning.explicitRequired ? !!explicitMatch : semanticMatch || !!explicitMatch;
+      if(detected){
+        const confidence=explicitMatch ? Math.max(evidence.score,0.99) : evidence.score;
+        base.detectedMeanings.push({id:meaning.id,label:meaning.label,confidence});
+        base.evidenceSpans.push({meaningId:meaning.id,responseEvidence:explicitMatch?original:evidence.responseEvidence,matchedExample:explicitMatch||evidence.example,confidence});
+      }
     }
     const requiredIds=new Set(rubric.requiredMeanings.map(x=>x.id));
     base.requiredConceptsFound=base.detectedMeanings.filter(x=>requiredIds.has(x.id)).map(x=>x.id);
@@ -95,7 +109,7 @@
     return {...base,decision:DECISIONS.RETRY,pass:false,feedback:rubric.retryFeedback};
   }
 
-  const api={ assess, DECISIONS, _test:{clean,cosine,containsPattern,keywordStuffing} };
+  const api={ assess, DECISIONS, _test:{clean,cosine,containsPattern,keywordStuffing,explicitMeaningMatch} };
   if(typeof window!=='undefined')window.ACADEMY_SEMANTIC_SCORER=api;
   if(typeof module!=='undefined')module.exports=api;
 })();
