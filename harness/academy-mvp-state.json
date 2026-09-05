@@ -43,15 +43,15 @@
     },
     "productOwnerBehaviouralReview": {
       "status": "blocked",
-      "evidence": "Lesson 1.1 review is complete. Physical iPhone review of Lessons 1.5 and 4.2 on 2026-09-05 found unresolved behavioural mismatches. Lesson 4.2: strong PASS; natural everyday CLARIFY instead of PASS; partial/vague PASS instead of partial; unexpected logical PASS; unsafe RETRY; polished unsafe RETRY; short expert PASS; spelling-error CLARIFY instead of PASS; initial PASS then unsafe edit CLARIFY with progress relocked. Lesson 1.5 also showed a partial/vague false pass, spelling brittleness and an unsafe edited answer remaining passed. Evidence-led corrections are implemented at PR head 0f5659f; the gate remains blocked until physical iPhone retest."
+      "evidence": "Lesson 1.1 review is complete. Initial physical iPhone review of Lessons 1.5 and 4.2 on 2026-09-05 found behavioural mismatches. Focused Lesson 1.5 iPhone retest against commit 54c84ee recorded: strong CLARIFY instead of PASS; natural everyday PASS; partial/vague CLARIFY; unexpected logical PASS; unsafe BLOCKED; polished unsafe BLOCKED; short expert PASS; spelling-error PASS. Editing the passed natural answer immediately produced RECHECK, confirming relock. The final safe setup answer using 'after removing customer names, account numbers and contact details' also CLARIFIED, so its requested PASS-to-unsafe sequence could not begin; the unsafe replacement independently BLOCKED. Behavioural review remains blocked on the reproducible strong-answer false clarification."
     },
     "falsePassSafety": {
       "status": "blocked",
-      "evidence": "Physical product-owner evidence overrides the previously clean automated matrix. Lesson 1.5 allowed a vague answer to pass and retained PASS after editing to explicit unsafe customer-data handling. Lesson 4.2 allowed the partial answer 'I won’t upload it until I check whether the tool is approved' to pass without the required information-handling/access boundary. Explicit meaning evidence and the observed unsafe phrases are now covered by deterministic regressions at PR head 0f5659f; safety remains blocked pending physical retest."
+      "evidence": "Physical product-owner evidence overrides the previously clean automated matrix. The focused Lesson 1.5 iPhone retest at commit 54c84ee confirmed partial/vague CLARIFY and both unsafe forms BLOCKED, including the final explicit unsafe replacement. Lesson 4.2 previously allowed a partial answer to pass without the required information-handling/access boundary and still requires focused retest. Safety remains blocked until all affected physical cases are confirmed."
     },
     "progressRelockRegression": {
       "status": "blocked",
-      "evidence": "Automated relock regression passed, and physical Lesson 4.2 unsafe editing correctly relocked to CLARIFY. However, physical Lesson 1.5 testing showed an answer could be changed from PASS to explicit unsafe handling while the exercise remained passed. PR head 0f5659f now invalidates PASS immediately on any edit and adds source regression coverage; this gate remains blocked until physical retest."
+      "evidence": "Focused Lesson 1.5 iPhone retest at commit 54c84ee confirmed that editing the passed natural answer immediately clears PASS and shows RECHECK. The planned final PASS-to-unsafe sequence could not start because its safe setup answer incorrectly CLARIFIED, although the unsafe replacement independently BLOCKED. Relock behaviour is physically evidenced, but the gate remains blocked until the complete intended sequence is rerun after the strong-answer false clarification is corrected."
     },
     "externalLendingProfessionalReview": {
       "status": "pending",
