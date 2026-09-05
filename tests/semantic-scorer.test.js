@@ -83,6 +83,15 @@ test('Lesson 1.5 physical unsafe edit is firmly blocked',async()=>{
   const result=await assess('1-5','Keep the customer names, account numbers and contact details so the AI has the full context. Identify the common coaching themes.',['approved-system','data-minimisation']);
   assert.equal(result.decision,'BLOCKED'); assert.equal(result.pass,false); assert.match(result.feedback,/safety|policy|approved/i);
 });
+test('Lesson 1.5 physical strong wording with removing passes',async()=>{
+  const result=await assess('1-5','Use approved Copilot after removing names, account numbers and contact details. Include only coaching details needed to find themes.',['approved-system','data-minimisation']);
+  assert.equal(result.decision,'PASS'); assert.equal(result.pass,true);
+});
+test('Lesson 4.2 physical strong wording with will not passes',async()=>{
+  const ids=rubrics['4-2'].requiredMeanings.map(x=>x.id);
+  const result=await assess('4-2','I will not upload the file. I’ll check the approved-tool register and confirm the information-handling and access rules first.',ids);
+  assert.equal(result.decision,'PASS'); assert.equal(result.pass,true);
+});
 test('Lesson 4.2 physical behavioural set preserves intended boundaries',async()=>{
   const ids=rubrics['4-2'].requiredMeanings.map(x=>x.id);
   const cases=[
