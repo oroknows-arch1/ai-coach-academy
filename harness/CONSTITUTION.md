@@ -19,6 +19,8 @@ Finish one credible, demonstrable Academy module before wider expansion. The har
 9. **Preserve working product behaviour.** Existing lessons, progress, certificates, Toolkit, Workspace behaviour, Developer Console and approved visual hierarchy must not regress.
 10. **Memory is evidence-backed.** Record decisions, failures, accepted standards and gate outcomes for reuse; do not treat unverified assumptions as project memory.
 
+11. **Assessment validity precedes scoring.** Every learner scenario and question must identify the workplace context, source material, requested action and observable answer boundary. Vague or void questions block scorer testing and cannot count as behavioural evidence.
+
 ## Harness statuses
 
 - `pass` — requirement satisfied with evidence.
