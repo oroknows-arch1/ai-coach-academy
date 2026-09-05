@@ -11,3 +11,11 @@ test('semantic review mode is isolated and exposes only the three trial lessons'
   assert.match(app,/qaUnlockAll: SEMANTIC_TEST_MODE/);
   assert.match(route,/semantic-test/);
 });
+
+test('editing a passed response immediately relocks progress',()=>{
+  const app=fs.readFileSync('app.js','utf8');
+  assert.match(app,/changedAfterPass/);
+  assert.match(app,/formativePassed:false,assessment:null,selectedAnswer:null,understandingPassed:false/);
+  assert.match(app,/RECHECK REQUIRED/);
+  assert.match(app,/continueLesson'\)\.disabled=true/);
+});
