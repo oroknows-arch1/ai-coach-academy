@@ -20,6 +20,7 @@ const requiredPreMigrationGates = [
   'staticValidation',
   'realModelSimulationMatrix',
   'physicalMobileTiming',
+  'assessmentContentValidity',
   'productOwnerBehaviouralReview',
   'falsePassSafety',
   'progressRelockRegression'
