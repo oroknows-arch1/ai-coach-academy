@@ -31,6 +31,7 @@ jobs:
         run: |
           sed -i "s/device: 'wasm'/device: 'cpu'/" scripts/real-model-simulation.mjs
           sed -i "s/q8\/WASM/q8\/CPU/" scripts/real-model-simulation.mjs
+          sed -i "s/q8 · WASM/q8 · CPU/" scripts/real-model-simulation.mjs
           sed -i "s/device:'wasm'/device:'cpu'/" scripts/real-model-simulation.mjs
       - name: Full real-model semantic simulation matrix
         run: node scripts/real-model-simulation.mjs
