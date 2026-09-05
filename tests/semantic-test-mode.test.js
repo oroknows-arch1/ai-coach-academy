@@ -19,3 +19,11 @@ test('editing a passed response immediately relocks progress',()=>{
   assert.match(app,/RECHECK REQUIRED/);
   assert.match(app,/continueLesson'\)\.disabled=true/);
 });
+
+test('editing any assessed response clears stale feedback and requires recheck',()=>{
+  const app=fs.readFileSync('app.js','utf8');
+  assert.match(app,/changedAfterAssessment/);
+  assert.match(app,/previous\.assessment!==null/);
+  assert.match(app,/if\(changedAfterAssessment\)/);
+  assert.match(app,/RECHECK REQUIRED/);
+});
