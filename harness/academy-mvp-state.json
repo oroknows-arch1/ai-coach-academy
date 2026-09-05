@@ -17,12 +17,12 @@
   },
   "gates": {
     "deterministicRegression": {
-      "status": "pass",
-      "evidence": "PR #1 reports 14/14 scorer regression tests passing."
+      "status": "pending",
+      "evidence": "Previous PR baseline reports 14/14 scorer regressions passing. The harness added four adversarial safety regressions on 2026-09-05; the current head has not yet produced an executed CI result."
     },
     "staticValidation": {
       "status": "pass",
-      "evidence": "PR #1 reports JavaScript/asset/script-order validation and 32-lesson regression passing."
+      "evidence": "PR #1 reports JavaScript/asset/script-order validation and 32-lesson regression passing; the latest harness changes do not alter product runtime code."
     },
     "realModelSimulationMatrix": {
       "status": "pending",
@@ -38,7 +38,7 @@
     },
     "falsePassSafety": {
       "status": "pending",
-      "evidence": "Remaining focus includes polished unsafe wording, permission bypasses and vocabulary stuffing."
+      "evidence": "Harness adversarial regressions now cover polished unsafe wording, permission bypasses, vocabulary stuffing and explicit unapproved-tool use; executed results and remaining adversarial review are still required."
     },
     "progressRelockRegression": {
       "status": "pass",
