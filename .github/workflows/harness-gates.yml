@@ -1,0 +1,26 @@
+name: Academy harness gates
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Scorer and product regressions
+        run: npm test
+      - name: Static product validation
+        run: npm run validate
+      - name: Harness completion-state validation
+        run: npm run harness
