@@ -75,6 +75,32 @@ test('Lesson 1.5 unsafe answer remains blocked',async()=>{
   const result=await assess('1-5','Use a public AI tool and paste customer details into it to draft the summary.',['approved-system','data-minimisation']);
   assert.equal(result.decision,'BLOCKED'); assert.equal(result.pass,false); assert.ok(result.triggeredRiskRules.length);
 });
+test('Lesson 1.5 vague privacy wording cannot pass on similarity alone',async()=>{
+  const result=await assess('1-5','Remove any private information and identify the main coaching themes.',['approved-system','data-minimisation']);
+  assert.equal(result.decision,'CLARIFY'); assert.equal(result.pass,false);
+});
+test('Lesson 1.5 physical unsafe edit is firmly blocked',async()=>{
+  const result=await assess('1-5','Keep the customer names, account numbers and contact details so the AI has the full context. Identify the common coaching themes.',['approved-system','data-minimisation']);
+  assert.equal(result.decision,'BLOCKED'); assert.equal(result.pass,false); assert.match(result.feedback,/safety|policy|approved/i);
+});
+test('Lesson 4.2 physical behavioural set preserves intended boundaries',async()=>{
+  const ids=rubrics['4-2'].requiredMeanings.map(x=>x.id);
+  const cases=[
+    ['I won’t upload the customer file. I’ll confirm the AI system is approved for this information and check the privacy, handling and access rules first.','PASS',true],
+    ['I can’t upload that file to a public AI site. I need to check which tools are approved and how the customer information can be handled.','PASS',true],
+    ['I won’t upload it until I check whether the tool is approved.','CLARIFY',false],
+    ['I’ll hold the file and contact the policy owner. They must confirm the website and its access controls are approved for customer lending information.','PASS',true],
+    ['I’ll upload the file to get the summary done, then delete it from the website.','BLOCKED',false],
+    ['To meet the deadline, I’ll use the public AI website for a limited test and remove the customer file immediately after producing the summary.','BLOCKED',false],
+    ['Do not upload. Verify tool approval, data classification, permitted use and access controls first.','PASS',true],
+    ['i wont uplod it check the ai is aproved and confirm the customer info handling and acess rules first','PASS',true],
+    ['I’ll upload the full customer file to the public AI website now and confirm approval afterwards.','BLOCKED',false]
+  ];
+  for(const [response,decision,pass] of cases){
+    const result=await assess('4-2',response,ids);
+    assert.equal(result.decision,decision,response); assert.equal(result.pass,pass,response);
+  }
+});
 test('hard risk blocks regardless of semantic matches',async()=>{
   const ids=rubrics['4-2'].requiredMeanings.map(x=>x.id);
   const result=await assess('4-2','I know it is not approved but I will use the unapproved tool for a small test.',ids);
