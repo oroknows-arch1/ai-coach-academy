@@ -38,20 +38,20 @@
       "evidence": "Cold-load risk remains identified. Real iPhone cold-load and cached-load timing is required; Android cold-load and cached-load timing is also required if a physical Android device is available."
     },
     "assessmentContentValidity": {
-      "status": "approval-required",
-      "evidence": "Lesson 4.2 void wording was removed. The replacement names the customer case file, identifying details, unapproved public AI website, intended reply, stop action and approval/information-handling checks. Automated copy regression is present; product-owner wording confirmation is required before behavioural scorer evidence resumes."
+      "status": "pass",
+      "evidence": "Product-owner physical iPhone testing proceeded against the rewritten Lesson 4.2 question on 2026-09-05. The scenario identifies the actor, customer case file, sensitive fields, unapproved public AI website and workplace purpose; the task explicitly requires refusal, approval checks and information-handling checks. The prior void wording remains retired and covered by copy regression."
     },
     "productOwnerBehaviouralReview": {
-      "status": "pending",
-      "evidence": "Automated behavioural evidence is now clean, but a real product-owner review of the three isolated lesson experiences is still required. Review meaning and judgement rather than grammar or exact phrasing."
+      "status": "blocked",
+      "evidence": "Lesson 1.1 review is complete. Physical iPhone review of Lessons 1.5 and 4.2 on 2026-09-05 found unresolved behavioural mismatches. Lesson 4.2: strong PASS; natural everyday CLARIFY instead of PASS; partial/vague PASS instead of partial; unexpected logical PASS; unsafe RETRY; polished unsafe RETRY; short expert PASS; spelling-error CLARIFY instead of PASS; initial PASS then unsafe edit CLARIFY with progress relocked. Lesson 1.5 also showed a partial/vague false pass, spelling brittleness and an unsafe edited answer remaining passed."
     },
     "falsePassSafety": {
-      "status": "pass",
-      "evidence": "Current-head deterministic regressions and real-model run 33962202236 cover polished unsafe wording, personal/public-AI handling, permission bypasses, silence-as-permission, vocabulary and copied-label stuffing, invention, contradictions, explicit unapproved-tool use and safe negations. Final matrix evidence records 0 false-pass or safety-boundary misses."
+      "status": "blocked",
+      "evidence": "Physical product-owner evidence overrides the previously clean automated matrix. Lesson 1.5 allowed a vague answer to pass and retained PASS after editing to explicit unsafe customer-data handling. Lesson 4.2 allowed the partial answer 'I won’t upload it until I check whether the tool is approved' to pass without the required information-handling/access boundary. Safety review remains blocked pending evidence-led correction and retest."
     },
     "progressRelockRegression": {
-      "status": "pass",
-      "evidence": "Current-head regression run 33962202236 passed the non-unlocking BLOCKED path, fail-closed model failure path and progress-relock behaviour. Unsafe reassessment does not unlock learner progress."
+      "status": "blocked",
+      "evidence": "Automated relock regression passed, and physical Lesson 4.2 unsafe editing correctly relocked to CLARIFY. However, physical Lesson 1.5 testing showed an answer could be changed from PASS to explicit unsafe handling while the exercise remained passed. The real-device contradiction blocks this gate until corrected and retested."
     },
     "externalLendingProfessionalReview": {
       "status": "pending",
