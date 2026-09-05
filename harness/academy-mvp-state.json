@@ -5,7 +5,11 @@
   "currentStage": "semantic-scorer-vertical-slice-validation",
   "releaseReady": false,
   "scope": {
-    "semanticSliceLessons": ["1-1", "1-5", "4-2"],
+    "semanticSliceLessons": [
+      "1-1",
+      "1-5",
+      "4-2"
+    ],
     "firstExpansionModule": 1,
     "widerMigrationAllowed": false
   },
@@ -13,7 +17,8 @@
     "failClosed": true,
     "semanticSimilarityCannotOverrideSafety": true,
     "evidenceRequiredForPass": true,
-    "humanAuthorityExplicit": true
+    "humanAuthorityExplicit": true,
+    "assessmentValidityPrecedesScoring": true
   },
   "gates": {
     "deterministicRegression": {
@@ -31,6 +36,10 @@
     "physicalMobileTiming": {
       "status": "pending",
       "evidence": "Cold-load risk remains identified. Real iPhone cold-load and cached-load timing is required; Android cold-load and cached-load timing is also required if a physical Android device is available."
+    },
+    "assessmentContentValidity": {
+      "status": "approval-required",
+      "evidence": "Lesson 4.2 void wording was removed. The replacement names the customer case file, identifying details, unapproved public AI website, intended reply, stop action and approval/information-handling checks. Automated copy regression is present; product-owner wording confirmation is required before behavioural scorer evidence resumes."
     },
     "productOwnerBehaviouralReview": {
       "status": "pending",
