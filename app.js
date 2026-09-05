@@ -112,7 +112,19 @@
   function bindLesson(l,w){
     const id=idOf(l), toggle=document.getElementById('conceptToggle'), body=document.getElementById('conceptBody'), box=document.getElementById('responseBox');
     toggle.addEventListener('click',()=>{ const open=toggle.getAttribute('aria-expanded')==='true'; toggle.setAttribute('aria-expanded',String(!open)); body.classList.toggle('hidden',open); });
-    box.addEventListener('input',()=>{ setWork(id,{response:box.value}); document.getElementById('responseCount').textContent=`${box.value.trim().length} characters`; document.getElementById('saveToolkit').disabled=box.value.trim().length<20; });
+    box.addEventListener('input',()=>{
+      const previous=work(id), changedAfterPass=previous.formativePassed && box.value!==previous.response;
+      setWork(id,changedAfterPass?{response:box.value,formativePassed:false,assessment:null,selectedAnswer:null,understandingPassed:false}:{response:box.value});
+      document.getElementById('responseCount').textContent=`${box.value.trim().length} characters`;
+      document.getElementById('saveToolkit').disabled=box.value.trim().length<20;
+      if(changedAfterPass){
+        document.getElementById('formativeFeedback').innerHTML='<div class="feedback bad"><strong>RECHECK REQUIRED</strong> — Your answer changed. Check it again to unlock progress.</div>';
+        document.getElementById('testAnotherResponse')?.remove();
+        const checkCard=main.querySelector('.check-card');
+        if(checkCard) checkCard.outerHTML=renderCheck(l,{formativePassed:false});
+        document.getElementById('continueLesson').disabled=true;
+      }
+    });
     document.getElementById('checkResponse').addEventListener('click',async()=>{
       const text=box.value.trim();
       const rubric=window.ACADEMY_LESSON_RUBRICS?.[id];
