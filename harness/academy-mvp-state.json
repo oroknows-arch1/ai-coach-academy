@@ -17,40 +17,40 @@
   },
   "gates": {
     "deterministicRegression": {
-      "status": "pending",
-      "evidence": "Previous PR baseline reports 14/14 scorer regressions passing. The harness added four adversarial safety regressions on 2026-09-05; the current head has not yet produced an executed CI result."
+      "status": "pass",
+      "evidence": "GitHub Actions evidence run 33962202236 executed the current scorer, rubric and test source mirrored from PR #1. 31/31 deterministic and product regression tests passed with 0 failures, including adversarial safety, safe-negation, keyword/label-stuffing, fail-closed model failure, progress relock and legacy-scorer isolation checks."
     },
     "staticValidation": {
       "status": "pass",
-      "evidence": "PR #1 reports JavaScript/asset/script-order validation and 32-lesson regression passing; the latest harness changes do not alter product runtime code."
+      "evidence": "GitHub Actions evidence run 33962202236 executed npm run validate successfully. JavaScript, asset, script-order and 32-lesson structural validation passed on the current source."
     },
     "realModelSimulationMatrix": {
-      "status": "pending",
-      "evidence": "Preserved matrix exists; full observed real-model results across every case remain required."
+      "status": "pass",
+      "evidence": "GitHub Actions evidence run 33962202236 executed Xenova/all-MiniLM-L6-v2 with @huggingface/transformers 3.7.2, q8, on the Node CPU evidence provider. Artifact 9968283682 recorded 59/59 expected outcomes, 0 unexpected results, 0 false-pass/safety-boundary misses and 0 false-retry risks across the preserved 54-case matrix plus 5 focused adversarial cases. Production browser inference remains q8/WASM and is covered separately by physical-device timing."
     },
     "physicalMobileTiming": {
       "status": "pending",
-      "evidence": "Cold-load risk identified; physical iPhone and Android cold/cached timing remains required."
+      "evidence": "Cold-load risk remains identified. Real iPhone cold-load and cached-load timing is required; Android cold-load and cached-load timing is also required if a physical Android device is available."
     },
     "productOwnerBehaviouralReview": {
       "status": "pending",
-      "evidence": "Behavioural calibration has occurred, but the PR still records product-owner behavioural review as a migration hold."
+      "evidence": "Automated behavioural evidence is now clean, but a real product-owner review of the three isolated lesson experiences is still required. Review meaning and judgement rather than grammar or exact phrasing."
     },
     "falsePassSafety": {
-      "status": "pending",
-      "evidence": "Harness adversarial regressions now cover polished unsafe wording, permission bypasses, vocabulary stuffing and explicit unapproved-tool use; executed results and remaining adversarial review are still required."
+      "status": "pass",
+      "evidence": "Current-head deterministic regressions and real-model run 33962202236 cover polished unsafe wording, personal/public-AI handling, permission bypasses, silence-as-permission, vocabulary and copied-label stuffing, invention, contradictions, explicit unapproved-tool use and safe negations. Final matrix evidence records 0 false-pass or safety-boundary misses."
     },
     "progressRelockRegression": {
       "status": "pass",
-      "evidence": "Unsafe reassessment is explicitly non-unlocking and stale knowledge-check rendering was corrected."
+      "evidence": "Current-head regression run 33962202236 passed the non-unlocking BLOCKED path, fail-closed model failure path and progress-relock behaviour. Unsafe reassessment does not unlock learner progress."
     },
     "externalLendingProfessionalReview": {
       "status": "pending",
-      "evidence": "Required before final demonstrable-module release."
+      "evidence": "Required before final demonstrable-module release. No external lending-professional evidence has yet been recorded."
     },
     "finalProductOwnerApproval": {
       "status": "approval-required",
-      "evidence": "Reserved for final merge/deploy decision after required evidence is complete."
+      "evidence": "Reserved for the final merge and deployment decision after all required technical, physical-device and human evidence is complete."
     }
   }
 }
