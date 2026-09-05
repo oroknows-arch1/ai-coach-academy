@@ -28,7 +28,8 @@ jobs:
       - name: Install pinned real-model runtime
         run: npm install --no-save --ignore-scripts @huggingface/transformers@3.7.2
       - name: Adapt browser execution provider for Node evidence runner
-        run: sed -i "s/device: 'wasm'/device: 'cpu'/" scripts/real-model-simulation.mjs
+        run: |
+          sed -i "s/device: 'wasm'/device: 'cpu'/" scripts/real-model-simulation.mjs
       - name: Full real-model semantic simulation matrix
         run: node scripts/real-model-simulation.mjs
       - name: Preserve real-model evidence
