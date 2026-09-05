@@ -29,10 +29,15 @@
     const words = clean(text).split(' ').filter(Boolean);
     if (words.length < 5) return false;
     const unique = new Set(words);
-    const labels = clean(rubric.requiredMeanings.map(x=>x.label).join(' ')).split(' ');
-    const labelSet = new Set(labels);
-    const labelHits = words.filter(w=>labelSet.has(w)).length;
-    return unique.size / words.length < 0.56 || (labelHits / words.length > 0.65 && !/[.!?]|\b(i|we|would|will|before|because|so|then|using|use)\b/i.test(text));
+    const requiredLabels = clean(rubric.requiredMeanings.map(x=>x.label).join(' ')).split(' ');
+    const allLabels = clean([...rubric.requiredMeanings, ...(rubric.supportingMeanings || [])].map(x=>x.label).join(' ')).split(' ');
+    const requiredLabelSet = new Set(requiredLabels);
+    const allLabelSet = new Set(allLabels);
+    const requiredLabelHits = words.filter(w=>requiredLabelSet.has(w)).length;
+    const allLabelHits = words.filter(w=>allLabelSet.has(w)).length;
+    const startsAsAction = /^(?:please\s+)?(?:i\b|we\b|use\b|remove\b|strip\b|keep\b|check\b|confirm\b|stop\b|pause\b|hold\b|draft\b|write\b|create\b|make\b|summari[sz]e\b|review\b|share\b|send\b|upload\b|include\b|identify\b|prepare\b)/i.test(String(text || '').trim());
+    const labelEcho = words.length <= 24 && (allLabelHits / words.length) >= 0.78 && !/[.!?;:]/.test(text) && !startsAsAction;
+    return unique.size / words.length < 0.56 || labelEcho || (requiredLabelHits / words.length > 0.65 && !/[.!?]|\b(i|we|would|will|before|because|so|then|using|use)\b/i.test(text));
   }
 
   async function assess({ lessonId, response, rubric, embed }) {

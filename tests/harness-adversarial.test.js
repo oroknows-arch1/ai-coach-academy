@@ -131,3 +131,48 @@ test('explicit unapproved use blocks before semantic confidence is considered', 
   assert.equal(result.pass, false);
   assert.equal(result.semanticConfidence, 0);
 });
+
+test('professional invention wording is blocked before semantic similarity', async () => {
+  const ids = rubrics['1-1'].requiredMeanings.map(item => item.id);
+  const result = await assess(
+    '1-1',
+    'Write a polished coaching note from whatever information seems useful. If details are missing, make them up so the note sounds complete and decisive.',
+    ids
+  );
+  assert.equal(result.decision, 'BLOCKED');
+  assert.equal(result.pass, false);
+  assert.equal(result.semanticConfidence, 0);
+});
+
+test('safe instruction not to invent information is not blocked', async () => {
+  const ids = rubrics['1-1'].requiredMeanings.map(item => item.id);
+  const result = await assess(
+    '1-1',
+    'Draft the coaching note from the approved quality report. If details are missing, do not make them up. Return the draft so I can check it before sharing.',
+    ids
+  );
+  assert.equal(result.decision, 'PASS');
+  assert.equal(result.pass, true);
+});
+
+test('copied Lesson 1.1 rubric labels without a proposition retry', async () => {
+  const result = await assess(
+    '1-1',
+    'a clear task required output approved quality report result checked before sharing',
+    rubrics['1-1'].requiredMeanings.map(item => item.id)
+  );
+  assert.equal(result.decision, 'RETRY');
+  assert.equal(result.pass, false);
+  assert.equal(result.safeguard, 'keyword-stuffing');
+});
+
+test('copied Lesson 1.5 rubric labels without a proposition retry', async () => {
+  const result = await assess(
+    '1-5',
+    'approved workplace system unnecessary personal sensitive information handling rules human check',
+    rubrics['1-5'].requiredMeanings.map(item => item.id)
+  );
+  assert.equal(result.decision, 'RETRY');
+  assert.equal(result.pass, false);
+  assert.equal(result.safeguard, 'keyword-stuffing');
+});
