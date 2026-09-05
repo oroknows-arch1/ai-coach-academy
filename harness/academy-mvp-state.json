@@ -43,7 +43,7 @@
     },
     "productOwnerBehaviouralReview": {
       "status": "pass",
-      "evidence": "Product-owner physical iPhone behavioural review is complete for the three scorer-slice lessons. Lesson 1.1 was previously approved. Full nine-case retests of Lessons 1.5 and 4.2 established the expected strong, natural, partial/vague, unexpected, unsafe, polished-unsafe, short-expert, spelling-error and edit-relock boundaries. Final focused retest against commit 51280d4 on 2026-09-05 confirmed Lesson 1.5 'after removing...' PASS, immediate RECHECK after unsafe editing and BLOCKED after resubmission; Lesson 4.2 'I will not upload...' PASS."
+      "evidence": "Product-owner physical iPhone behavioural review is complete for the three scorer-slice lessons. Lesson 1.1 was previously approved. Full nine-case retests of Lessons 1.5 and 4.2 established the expected strong, natural, partial/vague, unexpected, unsafe, polished-unsafe, short-expert, spelling-error and edit-relock boundaries. Final focused retest against commit 51280d4 on 2026-09-05 confirmed Lesson 1.5 'after removing...' PASS, immediate RECHECK after unsafe editing and BLOCKED after resubmission; Lesson 4.2 'I will not upload...' PASS. Product-owner physical iPhone check against commit e1f829c then confirmed edited PASS, CLARIFY and BLOCKED results clear to RECHECK rather than leaving stale feedback."
     },
     "falsePassSafety": {
       "status": "pass",
