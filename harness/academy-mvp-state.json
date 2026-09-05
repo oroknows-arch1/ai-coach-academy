@@ -42,16 +42,16 @@
       "evidence": "Product-owner physical iPhone testing proceeded against the rewritten Lesson 4.2 question on 2026-09-05. The scenario identifies the actor, customer case file, sensitive fields, unapproved public AI website and workplace purpose; the task explicitly requires refusal, approval checks and information-handling checks. The prior void wording remains retired and covered by copy regression."
     },
     "productOwnerBehaviouralReview": {
-      "status": "blocked",
-      "evidence": "Lesson 1.1 review is complete. Focused physical iPhone retests of Lessons 1.5 and 4.2 ran against commit 54c84ee on 2026-09-05. Lesson 1.5: strong CLARIFY instead of PASS; natural PASS; partial/vague CLARIFY; unexpected logical PASS; unsafe BLOCKED; polished unsafe BLOCKED; short expert PASS; spelling-error PASS; edit after PASS immediately RECHECKED; unsafe replacement BLOCKED. Its final safe setup using 'after removing...' also CLARIFIED. Lesson 4.2: strong 'I will not upload...' CLARIFY instead of PASS; natural PASS; partial/vague CLARIFY; unexpected logical PASS; unsafe BLOCKED; polished unsafe BLOCKED with firm feedback; short expert PASS; spelling-error PASS; safe setup PASS; edit immediately RECHECKED; unsafe replacement BLOCKED. The two exact strong expressions are corrected with deterministic regressions at PR head ee82287; behavioural review remains blocked pending focused physical confirmation."
+      "status": "pass",
+      "evidence": "Product-owner physical iPhone behavioural review is complete for the three scorer-slice lessons. Lesson 1.1 was previously approved. Full nine-case retests of Lessons 1.5 and 4.2 established the expected strong, natural, partial/vague, unexpected, unsafe, polished-unsafe, short-expert, spelling-error and edit-relock boundaries. Final focused retest against commit 51280d4 on 2026-09-05 confirmed Lesson 1.5 'after removing...' PASS, immediate RECHECK after unsafe editing and BLOCKED after resubmission; Lesson 4.2 'I will not upload...' PASS."
     },
     "falsePassSafety": {
-      "status": "blocked",
-      "evidence": "Physical product-owner evidence overrides the previously clean automated matrix. Focused iPhone retests at commit 54c84ee confirmed both Lessons 1.5 and 4.2 now CLARIFY partial/vague responses and BLOCK unsafe, polished-unsafe and edited-unsafe responses. Lesson 4.2 also displayed the intended firm unsafe feedback. No false pass was observed in either focused retest, but the gate remains blocked until the two remaining strong-answer false clarifications are corrected and the final focused sequences rerun."
+      "status": "pass",
+      "evidence": "Focused physical iPhone retests of Lessons 1.5 and 4.2 produced no false passes. Partial/vague responses CLARIFIED; unsafe, polished-unsafe and edited-unsafe responses BLOCKED. Final retest against commit 51280d4 confirmed the Lesson 1.5 unsafe edit BLOCKED after recheck, while the matching safe response passed. Automated safety and behavioural regression suite passes 38/38."
     },
     "progressRelockRegression": {
-      "status": "blocked",
-      "evidence": "Focused iPhone retests at commit 54c84ee confirmed immediate RECHECK and relock after editing passed answers in Lessons 1.5 and 4.2. Lesson 4.2 completed the full PASS-to-edit-to-BLOCKED sequence. Lesson 1.5 confirmed relock after a different valid PASS and independently BLOCKED the intended unsafe replacement, but its specified safe setup incorrectly CLARIFIED. The gate remains blocked until the Lesson 1.5 complete intended sequence is rerun after correcting that false clarification."
+      "status": "pass",
+      "evidence": "Physical iPhone evidence confirms that editing a passed response immediately clears PASS, displays RECHECK and relocks the understanding check. Final Lesson 1.5 retest against commit 51280d4 completed the intended PASS-to-edit-to-BLOCKED sequence. Lesson 4.2 had already completed the same sequence. Automated relock regression also passes."
     },
     "externalLendingProfessionalReview": {
       "status": "pending",
