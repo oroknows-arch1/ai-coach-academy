@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "project": "AI Coach Academy",
+  "target": "One credible demonstrable module beginning with Module 1 — AI Foundations",
+  "currentStage": "semantic-scorer-vertical-slice-validation",
+  "releaseReady": false,
+  "scope": {
+    "semanticSliceLessons": ["1-1", "1-5", "4-2"],
+    "firstExpansionModule": 1,
+    "widerMigrationAllowed": false
+  },
+  "laws": {
+    "failClosed": true,
+    "semanticSimilarityCannotOverrideSafety": true,
+    "evidenceRequiredForPass": true,
+    "humanAuthorityExplicit": true
+  },
+  "gates": {
+    "deterministicRegression": {
+      "status": "pass",
+      "evidence": "PR #1 reports 14/14 scorer regression tests passing."
+    },
+    "staticValidation": {
+      "status": "pass",
+      "evidence": "PR #1 reports JavaScript/asset/script-order validation and 32-lesson regression passing."
+    },
+    "realModelSimulationMatrix": {
+      "status": "pending",
+      "evidence": "Preserved matrix exists; full observed real-model results across every case remain required."
+    },
+    "physicalMobileTiming": {
+      "status": "pending",
+      "evidence": "Cold-load risk identified; physical iPhone and Android cold/cached timing remains required."
+    },
+    "productOwnerBehaviouralReview": {
+      "status": "pending",
+      "evidence": "Behavioural calibration has occurred, but the PR still records product-owner behavioural review as a migration hold."
+    },
+    "falsePassSafety": {
+      "status": "pending",
+      "evidence": "Remaining focus includes polished unsafe wording, permission bypasses and vocabulary stuffing."
+    },
+    "progressRelockRegression": {
+      "status": "pass",
+      "evidence": "Unsafe reassessment is explicitly non-unlocking and stale knowledge-check rendering was corrected."
+    },
+    "externalLendingProfessionalReview": {
+      "status": "pending",
+      "evidence": "Required before final demonstrable-module release."
+    },
+    "finalProductOwnerApproval": {
+      "status": "approval-required",
+      "evidence": "Reserved for final merge/deploy decision after required evidence is complete."
+    }
+  }
+}
