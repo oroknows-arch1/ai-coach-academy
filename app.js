@@ -3,10 +3,11 @@
   const { MODULES, LESSONS } = window.ACADEMY_COURSE;
 
   const SEMANTIC_TEST_IDS = ['1-1','1-5','4-2'];
-  const semanticTestMatch = location.hash.match(/^#semantic-test(?:=(1-1|1-5|4-2))?/);
+  const semanticTestMatch = location.hash.match(/^#(?:guided|semantic)-test(?:=(1-1|1-5|4-2))?/);
   const SEMANTIC_TEST_MODE = !!semanticTestMatch;
+  const GUIDED_TEST_MODE = location.hash.startsWith('#guided-test');
   const semanticTestTarget = semanticTestMatch?.[1] || '1-1';
-  const STORAGE_KEY = SEMANTIC_TEST_MODE ? 'aiCoachAcademy.semanticTest.v1' : 'aiCoachAcademy.v1';
+  const STORAGE_KEY = GUIDED_TEST_MODE ? 'aiCoachAcademy.guidedTest.v1' : SEMANTIC_TEST_MODE ? 'aiCoachAcademy.semanticTest.v1' : 'aiCoachAcademy.v1';
   const LEGACY_KEY = 'aiCoachAcademy.frontendFoundation.v1';
   const main = document.getElementById('appMain');
   const navButtons = [...document.querySelectorAll('.nav-item')];
@@ -55,7 +56,7 @@
   }
   function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
   function currentLesson(){ return LESSONS.find(l => idOf(l) === state.currentLessonId) || LESSONS[0]; }
-  function work(id = state.currentLessonId){ return { response:'', formativePassed:false, selectedAnswer:null, understandingPassed:false, assessment:null, ...(state.lessonWork[id] || {}) }; }
+  function work(id = state.currentLessonId){ return { response:'', formativePassed:false, practiceSelected:null, selectedAnswer:null, understandingPassed:false, assessment:null, ...(state.lessonWork[id] || {}) }; }
   function setWork(id, patch){ state.lessonWork = { ...state.lessonWork, [id]: { ...work(id), ...patch } }; save(); }
   function complete(id){ return state.completedLessons.includes(id); }
   function moduleComplete(moduleId){ const ls=lessonsFor(moduleId); return ls.length && ls.every(l => complete(idOf(l))); }
@@ -98,12 +99,19 @@
     const m=MODULES.find(x=>x.id===l.module), ls=lessonsFor(l.module), w=work(), done=complete(idOf(l)), saved=state.toolkit.some(t=>t.lessonId===idOf(l));
     const priorFeedback=w.assessment?assessmentFeedback(w.assessment):w.formativePassed?'<div class="feedback good">Good. The response is developed enough to move to the understanding check.</div>':'';
     const testNav=SEMANTIC_TEST_MODE?`<nav class="semantic-test-nav" aria-label="Semantic test lessons"><strong>Testing:</strong>${SEMANTIC_TEST_IDS.map(id=>{const x=LESSONS.find(item=>idOf(item)===id);return `<button type="button" data-semantic-test="${id}" class="${id===idOf(l)?'active':''}">Lesson ${x.module}.${x.lesson}</button>`;}).join('')}</nav>`:'';
-    main.innerHTML=`${testNav}<section class="lesson-layout"><aside class="workplace-panel"><img src="assets/workplace-desktop.png" alt="Professional lending coach working at a laptop in a modern office"></aside><article class="lesson-panel"><div class="lesson-topline"><div><button class="lesson-back" data-back-module type="button">Module ${l.module} · Lesson ${l.lesson}</button><span class="time-label">15–20 min</span></div><div class="progress-steps">${ls.map(x=>`<span class="progress-step ${complete(idOf(x))?'done':idOf(x)===idOf(l)?'current':''}"></span>`).join('')}</div></div><h1 class="lesson-title">${esc(l.title)}</h1><button class="concept-toggle" id="conceptToggle" aria-expanded="false" type="button"><span>Learn · Review the lesson concept</span><span class="plus">+</span></button><div id="conceptBody" class="concept-body hidden">${esc(l.concept)}</div><div class="mobile-workplace"><img src="assets/workplace-mobile.png" alt="Professional lending coach working at a laptop in a modern office"></div><section class="lesson-section scenario-section"><div class="section-icon">▣</div><div><h2>Workplace scenario</h2><p>${esc(l.scenario)}</p></div></section><section class="exercise-card"><div class="lesson-section exercise"><div class="section-icon">✎</div><div><h2>Try it</h2><p>${esc(l.exercise)}</p></div></div><textarea id="responseBox" class="response-box" placeholder="Write or edit your response here...">${esc(w.response)}</textarea><div class="response-meta"><span>Aim for a clear, checkable workplace response.</span><span id="responseCount">${w.response.trim().length} characters</span></div><button id="checkResponse" class="primary-action" type="button">CHECK MY ANSWER</button>${w.formativePassed?'<button id="testAnotherResponse" class="secondary-action" type="button">TEST ANOTHER RESPONSE</button>':''}<div id="formativeFeedback" aria-live="polite">${priorFeedback}</div></section>${renderCheck(l,w)}<button id="saveToolkit" class="secondary-action" type="button" ${w.response.trim().length<20?'disabled':''}>${saved?'✓ Saved to Toolkit':'⌑  Save to Toolkit'}</button><button id="continueLesson" class="footer-action" type="button" ${done?'':'disabled'}>${done?nextLabel(l):'Complete understanding check to continue →'}</button></article></section>`;
+    main.innerHTML=`${testNav}<section class="lesson-layout"><aside class="workplace-panel"><img src="assets/workplace-desktop.png" alt="Professional lending coach working at a laptop in a modern office"></aside><article class="lesson-panel"><div class="lesson-topline"><div><button class="lesson-back" data-back-module type="button">Module ${l.module} · Lesson ${l.lesson}</button><span class="time-label">15–20 min</span></div><div class="progress-steps">${ls.map(x=>`<span class="progress-step ${complete(idOf(x))?'done':idOf(x)===idOf(l)?'current':''}"></span>`).join('')}</div></div><h1 class="lesson-title">${esc(l.title)}</h1><button class="concept-toggle" id="conceptToggle" aria-expanded="false" type="button"><span>Learn · Review the lesson concept</span><span class="plus">+</span></button><div id="conceptBody" class="concept-body hidden">${esc(l.concept)}</div><div class="mobile-workplace"><img src="assets/workplace-mobile.png" alt="Professional lending coach working at a laptop in a modern office"></div><section class="lesson-section scenario-section"><div class="section-icon">▣</div><div><h2>Workplace scenario</h2><p>${esc(l.scenario)}</p></div></section>${renderExercise(l,w,priorFeedback)}${renderCheck(l,w)}<button id="saveToolkit" class="secondary-action" type="button" ${(l.guidedPractice?!w.formativePassed:w.response.trim().length<20)?'disabled':''}>${saved?'✓ Saved to Toolkit':'⌑  Save to Toolkit'}</button><button id="continueLesson" class="footer-action" type="button" ${done?'':'disabled'}>${done?nextLabel(l):'Complete understanding check to continue →'}</button></article></section>`;
     bindLesson(l,w);
   }
   function assessmentFeedback(assessment){
     const good=assessment.pass, label=assessment.decision?`<strong>${esc(assessment.decision)}</strong> — `:'';
     return `<div class="feedback ${good?'good':'bad'}">${label}${esc(assessment.feedback || '')}</div>`;
+  }
+  function renderExercise(l,w,priorFeedback){
+    if(l.guidedPractice){
+      const choices=l.guidedPractice.options.map((option,index)=>`<button class="check-option ${w.practiceSelected===index?'selected':''}" data-practice-answer="${index}" type="button">${esc(option.text)}</button>`).join('');
+      return `<section class="exercise-card guided-practice"><div class="lesson-section exercise"><div class="section-icon">✓</div><div><h2>Choose your response</h2><p>${esc(l.guidedPractice.prompt)}</p></div></div><div class="check-options">${choices}</div>${w.practiceSelected!==null?'<button id="checkPractice" class="primary-action" type="button">CHECK MY CHOICE</button>':''}${w.formativePassed?'<button id="testAnotherResponse" class="secondary-action" type="button">TRY ANOTHER CHOICE</button>':''}<div id="formativeFeedback" aria-live="polite">${priorFeedback}</div></section>`;
+    }
+    return `<section class="exercise-card"><div class="lesson-section exercise"><div class="section-icon">✎</div><div><h2>Try it</h2><p>${esc(l.exercise)}</p></div></div><textarea id="responseBox" class="response-box" placeholder="Write or edit your response here...">${esc(w.response)}</textarea><div class="response-meta"><span>Aim for a clear, checkable workplace response.</span><span id="responseCount">${w.response.trim().length} characters</span></div><button id="checkResponse" class="primary-action" type="button">CHECK MY ANSWER</button>${w.formativePassed?'<button id="testAnotherResponse" class="secondary-action" type="button">TEST ANOTHER RESPONSE</button>':''}<div id="formativeFeedback" aria-live="polite">${priorFeedback}</div></section>`;
   }
   function renderCheck(l,w){
     if(!w.formativePassed) return `<section class="check-card locked"><div class="check-header"><div class="check-badge">?</div><div><h2>Check your understanding</h2><p>Complete the formative response above to unlock the final understanding check.</p></div><span class="lock-icon">⌁</span></div></section>`;
@@ -112,52 +120,68 @@
   function bindLesson(l,w){
     const id=idOf(l), toggle=document.getElementById('conceptToggle'), body=document.getElementById('conceptBody'), box=document.getElementById('responseBox');
     toggle.addEventListener('click',()=>{ const open=toggle.getAttribute('aria-expanded')==='true'; toggle.setAttribute('aria-expanded',String(!open)); body.classList.toggle('hidden',open); });
-    box.addEventListener('input',()=>{
-      const previous=work(id), responseChanged=box.value!==previous.response;
-      const changedAfterPass=previous.formativePassed && responseChanged;
-      const changedAfterAssessment=previous.assessment!==null && previous.assessment!==undefined && responseChanged;
-      setWork(id,changedAfterAssessment?{response:box.value,formativePassed:false,assessment:null,selectedAnswer:null,understandingPassed:false}:{response:box.value});
-      document.getElementById('responseCount').textContent=`${box.value.trim().length} characters`;
-      document.getElementById('saveToolkit').disabled=box.value.trim().length<20;
-      if(changedAfterAssessment){
-        document.getElementById('formativeFeedback').innerHTML=`<div class="feedback bad"><strong>RECHECK REQUIRED</strong> — Your answer changed. Check it again${changedAfterPass?' to unlock progress':''}.</div>`;
-        document.getElementById('testAnotherResponse')?.remove();
-        if(changedAfterPass){
-          const checkCard=main.querySelector('.check-card');
-          if(checkCard) checkCard.outerHTML=renderCheck(l,{formativePassed:false});
-          document.getElementById('continueLesson').disabled=true;
+    if(l.guidedPractice){
+      main.querySelectorAll('[data-practice-answer]').forEach(button=>button.addEventListener('click',()=>{
+        const index=Number(button.dataset.practiceAnswer), option=l.guidedPractice.options[index];
+        setWork(id,{practiceSelected:index,response:option.text,formativePassed:false,assessment:null,selectedAnswer:null,understandingPassed:false});
+        renderLesson();
+      }));
+      const checkPractice=document.getElementById('checkPractice');
+      if(checkPractice) checkPractice.addEventListener('click',()=>{
+        const now=work(id), option=l.guidedPractice.options[now.practiceSelected];
+        const passed=option.outcome==='pass';
+        const assessment={pass:passed,decision:passed?'PASS':option.outcome==='blocked'?'BLOCKED':'CLARIFY',feedback:option.feedback};
+        setWork(id,{response:option.text,formativePassed:passed,assessment,selectedAnswer:null,understandingPassed:false});
+        renderLesson();
+      });
+    } else {
+      box.addEventListener('input',()=>{
+        const previous=work(id), responseChanged=box.value!==previous.response;
+        const changedAfterPass=previous.formativePassed && responseChanged;
+        const changedAfterAssessment=previous.assessment!==null && previous.assessment!==undefined && responseChanged;
+        setWork(id,changedAfterAssessment?{response:box.value,formativePassed:false,assessment:null,selectedAnswer:null,understandingPassed:false}:{response:box.value});
+        document.getElementById('responseCount').textContent=`${box.value.trim().length} characters`;
+        document.getElementById('saveToolkit').disabled=box.value.trim().length<20;
+        if(changedAfterAssessment){
+          document.getElementById('formativeFeedback').innerHTML=`<div class="feedback bad"><strong>RECHECK REQUIRED</strong> — Your answer changed. Check it again${changedAfterPass?' to unlock progress':''}.</div>`;
+          document.getElementById('testAnotherResponse')?.remove();
+          if(changedAfterPass){
+            const checkCard=main.querySelector('.check-card');
+            if(checkCard) checkCard.outerHTML=renderCheck(l,{formativePassed:false});
+            document.getElementById('continueLesson').disabled=true;
+          }
         }
-      }
-    });
-    document.getElementById('checkResponse').addEventListener('click',async()=>{
-      const text=box.value.trim();
-      const rubric=window.ACADEMY_LESSON_RUBRICS?.[id];
-      const button=document.getElementById('checkResponse');
-      let assessment;
-      if(rubric && window.ACADEMY_SEMANTIC_SCORER && window.ACADEMY_SEMANTIC_MODEL){
-        button.disabled=true; button.textContent='CHECKING ON THIS DEVICE…';
-        assessment=await window.ACADEMY_SEMANTIC_SCORER.assess({lessonId:id,response:text,rubric,embed:window.ACADEMY_SEMANTIC_MODEL.embed});
-      } else {
-        assessment=window.ACADEMY_SCORE_RESPONSE?window.ACADEMY_SCORE_RESPONSE(text):{pass:false,feedback:'The response checker is unavailable. Please try again.'};
-      }
-      const passed=assessment.pass;
-      setWork(id,{response:text,formativePassed:passed,assessment:rubric?assessment:null,selectedAnswer:passed?w.selectedAnswer:null,understandingPassed:passed?w.understandingPassed:false});
-      if(rubric) updateDeveloperAssessment(assessment);
-      if(rubric || passed) renderLesson();
-      else {button.disabled=false;button.textContent='CHECK MY ANSWER';document.getElementById('formativeFeedback').innerHTML=assessmentFeedback(assessment);}
-    });
+      });
+      document.getElementById('checkResponse').addEventListener('click',async()=>{
+        const text=box.value.trim();
+        const rubric=window.ACADEMY_LESSON_RUBRICS?.[id];
+        const button=document.getElementById('checkResponse');
+        let assessment;
+        if(rubric && window.ACADEMY_SEMANTIC_SCORER && window.ACADEMY_SEMANTIC_MODEL){
+          button.disabled=true; button.textContent='CHECKING ON THIS DEVICE…';
+          assessment=await window.ACADEMY_SEMANTIC_SCORER.assess({lessonId:id,response:text,rubric,embed:window.ACADEMY_SEMANTIC_MODEL.embed});
+        } else {
+          assessment=window.ACADEMY_SCORE_RESPONSE?window.ACADEMY_SCORE_RESPONSE(text):{pass:false,feedback:'The response checker is unavailable. Please try again.'};
+        }
+        const passed=assessment.pass;
+        setWork(id,{response:text,formativePassed:passed,assessment:rubric?assessment:null,selectedAnswer:passed?w.selectedAnswer:null,understandingPassed:passed?w.understandingPassed:false});
+        if(rubric) updateDeveloperAssessment(assessment);
+        if(rubric || passed) renderLesson();
+        else {button.disabled=false;button.textContent='CHECK MY ANSWER';document.getElementById('formativeFeedback').innerHTML=assessmentFeedback(assessment);}
+      });
+    }
     const testAnother=document.getElementById('testAnotherResponse');
     if(testAnother) testAnother.addEventListener('click',()=>{
-      setWork(id,{response:'',formativePassed:false,assessment:null,selectedAnswer:null,understandingPassed:false});
+      setWork(id,{response:'',formativePassed:false,practiceSelected:null,assessment:null,selectedAnswer:null,understandingPassed:false});
       renderLesson();
-      document.getElementById('responseBox').focus();
+      document.getElementById('responseBox')?.focus();
     });
     main.querySelectorAll('[data-answer]').forEach(b=>b.addEventListener('click',()=>{ setWork(id,{selectedAnswer:Number(b.dataset.answer),understandingPassed:false}); renderLesson(); }));
     const submit=document.getElementById('submitUnderstanding'); if(submit) submit.addEventListener('click',()=>{
       const now=work(id); if(now.selectedAnswer===l.correct){ setWork(id,{understandingPassed:true}); completeLesson(l); renderLesson(); }
       else document.getElementById('understandingFeedback').innerHTML=`<div class="feedback bad">${esc(l.incorrectFeedback || 'Not quite. Choose the answer that keeps evidence, boundaries and human accountability visible.')}</div>`;
     });
-    document.getElementById('saveToolkit').addEventListener('click',()=>saveToolkit(l,box.value.trim()));
+    document.getElementById('saveToolkit').addEventListener('click',()=>saveToolkit(l,work(id).response.trim()));
     document.getElementById('continueLesson').addEventListener('click',()=>{ if(!complete(id)) return; const next=nextLesson(l); if(next) openLesson(idOf(next)); else setView('certificates'); });
     document.querySelector('[data-back-module]').addEventListener('click',()=>openModule(l.module));
     main.querySelectorAll('[data-semantic-test]').forEach(button=>button.addEventListener('click',()=>openLesson(button.dataset.semanticTest)));
