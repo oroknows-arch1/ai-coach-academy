@@ -31,3 +31,18 @@ test('Lesson 4.2 has a concrete and answerable policy-boundary task',()=>{
   assert.doesNotMatch(lesson.scenario,/sensitive lending material/i);
   assert.doesNotMatch(lesson.exercise,/response and next step/i);
 });
+
+test('professional-testing lessons use guided scenario choices with tailored feedback',()=>{
+  const window={};
+  vm.runInNewContext(fs.readFileSync('course-data.js','utf8'),{window});
+  for(const id of ['1-1','1-5','4-2']){
+    const [module,lessonNumber]=id.split('-').map(Number);
+    const lesson=window.ACADEMY_COURSE.LESSONS.find(x=>x.module===module&&x.lesson===lessonNumber);
+    assert.ok(lesson.guidedPractice, `Missing guided practice for ${id}`);
+    assert.equal(lesson.guidedPractice.options.length,4);
+    assert.equal(lesson.guidedPractice.options.filter(x=>x.outcome==='pass').length,1);
+    assert.ok(lesson.guidedPractice.options.some(x=>x.outcome==='clarify'));
+    assert.ok(lesson.guidedPractice.options.some(x=>x.outcome==='blocked'));
+    assert.ok(lesson.guidedPractice.options.every(x=>x.text.length>35&&x.feedback.length>35));
+  }
+});
