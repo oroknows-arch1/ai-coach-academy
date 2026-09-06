@@ -49,6 +49,40 @@
     L(6,4,'Capstone: make the recommendation','Turn the evidence into a clear recommendation: problem, controlled solution, pilot evidence, risks, what remains human and the next decision. The goal is the best evidence-based call, not proving AI should be used.','You must present the capstone outcome to the people responsible for deciding what happens next.','Write a one-page final recommendation covering the problem, solution, evidence, controls, risks, decision and next step.','What is the capstone final standard?',['A persuasive case for AI adoption.','An evidence-based recommendation with clear controls and human accountability.','A technically detailed description of the AI model.'],1,'Capstone recommendation')
   ];
 
+  const GUIDED_PRACTICE = {
+    '1-1': {
+      prompt: 'Which instruction would you give Copilot?',
+      options: [
+        { outcome:'clarify', text:'Write a professional summary of the coaching issues for regional leaders.', feedback:'This names the output and audience, but not the approved source or what you will check before sharing.' },
+        { outcome:'pass', text:'Using only the approved quality report, create a short coaching note for regional leaders. I will check the issues and expected improvement against the report before sharing it.', feedback:'Good choice. It names the output, approved source and the check you remain responsible for.' },
+        { outcome:'blocked', text:'Use any company information you can access, decide what caused the issues and send regional leaders the finished note.', feedback:'Stop here. This uses uncontrolled information, asks Copilot to invent a cause and removes human review.' },
+        { outcome:'clarify', text:'Use the approved quality report to write a confident coaching note and send it to regional leaders.', feedback:'The approved source is clear, but the note should be checked by a person before it is shared.' }
+      ]
+    },
+    '1-5': {
+      prompt: 'Which version prepares the information safely before AI is used?',
+      options: [
+        { outcome:'clarify', text:'Use the company AI system and make sure the customer information stays private.', feedback:'This points in the right direction, but it does not say which identifying details must be removed.' },
+        { outcome:'pass', text:'Remove customer names, account numbers and contact details first. Then use only the coaching information needed in the approved workplace AI system.', feedback:'Good choice. Unnecessary identifiers are removed before the minimum information enters an approved system.' },
+        { outcome:'blocked', text:'Upload the full examples to approved Copilot, label them confidential and ask it to remove the customer details from its answer.', feedback:'Stop here. Unnecessary customer details must be removed before anything is uploaded.' },
+        { outcome:'blocked', text:'Remove the customer names, then use a public AI website because no names remain.', feedback:'Stop here. Removing names alone does not make an unapproved public system acceptable.' }
+      ]
+    },
+    '4-2': {
+      prompt: 'What should you say and do first?',
+      options: [
+        { outcome:'clarify', text:'I will remove the customer names and use the website only for a quick summary.', feedback:'Removing names does not approve the website or resolve its information-handling and access rules.' },
+        { outcome:'pass', text:'I will not upload the file. I will check the approved-tool register and confirm the information-handling and access rules before using any AI system.', feedback:'Good choice. The upload stops until both tool approval and information-handling boundaries are confirmed.' },
+        { outcome:'blocked', text:'I will run a small test now and ask the policy owner whether the website is approved afterwards.', feedback:'Stop here. A limited test still exposes customer information before approval is confirmed.' },
+        { outcome:'clarify', text:'I will wait until someone confirms that the website is approved.', feedback:'Stopping is correct, but you also need to confirm the information-handling and access rules for this customer file.' }
+      ]
+    }
+  };
+  for(const lesson of LESSONS){
+    const guided=GUIDED_PRACTICE[`${lesson.module}-${lesson.lesson}`];
+    if(guided) lesson.guidedPractice=guided;
+  }
+
   function L(module, lesson, title, concept, scenario, exercise, checkQuestion, answers, correct, toolkitTitle, correctFeedback, incorrectFeedback) {
     return { module, lesson, title, concept, scenario, exercise, checkQuestion, answers, correct, toolkitTitle, correctFeedback, incorrectFeedback };
   }
