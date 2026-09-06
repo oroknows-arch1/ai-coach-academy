@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "project": "AI Coach Academy",
   "target": "One credible demonstrable module beginning with Module 1 — AI Foundations",
-  "currentStage": "semantic-scorer-vertical-slice-validation",
+  "currentStage": "guided-multiple-choice-professional-review",
   "releaseReady": false,
   "scope": {
     "semanticSliceLessons": [
@@ -10,6 +10,8 @@
       "1-5",
       "4-2"
     ],
+    "assessmentMode": "guided-multiple-choice",
+    "advancedSemanticPractice": "preserved-not-learner-facing",
     "firstExpansionModule": 1,
     "widerMigrationAllowed": false
   },
@@ -34,16 +36,16 @@
       "evidence": "GitHub Actions evidence run 33962202236 executed Xenova/all-MiniLM-L6-v2 with @huggingface/transformers 3.7.2, q8, on the Node CPU evidence provider. Artifact 9968283682 recorded 59/59 expected outcomes, 0 unexpected results, 0 false-pass/safety-boundary misses and 0 false-retry risks across the preserved 54-case matrix plus 5 focused adversarial cases. Production browser inference remains q8/WASM and is covered separately by physical-device timing."
     },
     "physicalMobileTiming": {
-      "status": "pending",
-      "evidence": "Cold-load risk remains identified. Real iPhone cold-load and cached-load timing is required; Android cold-load and cached-load timing is also required if a physical Android device is available."
+      "status": "advisory",
+      "evidence": "The beginner professional-review slice now uses deterministic guided multiple choice and does not load or invoke the semantic model. Cold and cached model timing is therefore not applicable to release of this guided module. Timing evidence remains required before the preserved semantic scorer is introduced later as learner-facing advanced practice."
     },
     "assessmentContentValidity": {
       "status": "pass",
       "evidence": "Product-owner physical iPhone testing proceeded against the rewritten Lesson 4.2 question on 2026-09-05. The scenario identifies the actor, customer case file, sensitive fields, unapproved public AI website and workplace purpose; the task explicitly requires refusal, approval checks and information-handling checks. The prior void wording remains retired and covered by copy regression."
     },
     "productOwnerBehaviouralReview": {
-      "status": "pass",
-      "evidence": "Product-owner physical iPhone behavioural review is complete for the three scorer-slice lessons. Lesson 1.1 was previously approved. Full nine-case retests of Lessons 1.5 and 4.2 established the expected strong, natural, partial/vague, unexpected, unsafe, polished-unsafe, short-expert, spelling-error and edit-relock boundaries. Final focused retest against commit 51280d4 on 2026-09-05 confirmed Lesson 1.5 'after removing...' PASS, immediate RECHECK after unsafe editing and BLOCKED after resubmission; Lesson 4.2 'I will not upload...' PASS. Product-owner physical iPhone check against commit e1f829c then confirmed edited PASS, CLARIFY and BLOCKED results clear to RECHECK rather than leaving stale feedback."
+      "status": "pending",
+      "evidence": "The prior free-text scorer slice passed product-owner physical iPhone behavioural review. External feedback then identified an initial blank-page wording barrier for beginner learners, and the product owner approved guided multiple choice for the professional-review slice on 2026-09-06. The new choice flow, tailored feedback, retry behaviour and understanding unlock now require a focused product-owner UI check before external review."
     },
     "falsePassSafety": {
       "status": "pass",
