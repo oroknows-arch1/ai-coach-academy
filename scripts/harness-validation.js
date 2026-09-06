@@ -19,12 +19,15 @@ const requiredPreMigrationGates = [
   'deterministicRegression',
   'staticValidation',
   'realModelSimulationMatrix',
-  'physicalMobileTiming',
   'assessmentContentValidity',
   'productOwnerBehaviouralReview',
   'falsePassSafety',
   'progressRelockRegression'
 ];
+
+if (state.scope?.assessmentMode === 'semantic-free-text') {
+  requiredPreMigrationGates.push('physicalMobileTiming');
+}
 
 const requiredReleaseGates = [
   ...requiredPreMigrationGates,
