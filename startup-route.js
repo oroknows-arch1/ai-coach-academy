@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  if (location.hash.startsWith('#semantic-test')) return;
+  if (location.hash.startsWith('#semantic-test') || location.hash.startsWith('#guided-test')) return;
 
   const STORAGE_KEY = 'aiCoachAcademy.v1';
   const course = window.ACADEMY_COURSE;
